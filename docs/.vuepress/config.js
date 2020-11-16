@@ -6,7 +6,7 @@ module.exports = {
         ['link', { rel: 'icon', href: '/favicon.ico' }],
         ['meta', { name: 'viewport', content: 'width=device-width,initial-scale=1,user-scalable=no' }]
     ],
-    base: '/blog',
+    base: '/blog/',
     theme: 'reco',
     themeConfig: {
         mode: 'dark', // 默认 auto，auto 跟随系统，dark 暗色模式，light 亮色模式
