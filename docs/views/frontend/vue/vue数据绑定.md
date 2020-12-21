@@ -7,27 +7,18 @@ tags :
   - open source project
   - vue
 ---
-Vue1.0 ：一个对象属性对应一个dep，一个dep对应多个watcher(watcher也是细粒度的)(一个对象属性可能在多个标签使用，那么就会有对应多个watcher，这些watcher都会放入到这个对象属性唯一对应的dep中)，但数据过大时，就会有很多个watcher，就会出现性能问题；
-Vue2.0：引入VDOM，给每个vue组件绑定一个watcher(渲染watcher)，这个组件上的数据的dep中都包含有该watcher，当该组件数据发生变化时，就会通知watcher触发update方法，生成VDOM，和旧的VDOM进行比较，更新改变的部分，极大的减少了watcher的数量，优化了性能；（所以，在Vue2.0中是一个组件对应一个watcher）
-
-
-Dep：扮演观察目标的角色，每一个数据都会有Dep类实例，它内部有个subs队列，subs就是subscribers的意思，保存着依赖本数据的观察者，当本数据变更时，调用dep.notify()通知观察者
-Watcher：扮演观察者的角色，进行观察者函数的包装处理。如render()函数，会被进行包装成一个Watcher实例 
-Observer：辅助的可观测类，数组/对象通过它的转化，可成为可观测数据
-
-Watcher
-1. 传入 组件实例 观察者函数 回调函数 选项
-2. 进行初始求值 watcher.get() 
-   - 初始准备工作：将当前watcher赋值给Dep.target，清空newDeps newDepIds
-   - 调用 观察者函数 进行计算、事后清理
-    （1）计算：由于数据观测阶段执行了defineReactive()，所以计算过程用到的数据会得以访问，从而触发数据的getter，从而执行watcher.addDep()方法，将特定的数据记为依赖。
-      - 对每个数据执行watcher.addDep(dep)后，数据对应的dep如果在newDeps里不存在，就会加入到newDeps里，这是因为一次计算过程数据有可能被多次使用，但是同样的依赖只能收集一次。并且如果在deps不存在，表示上一轮计算中，当前watcher未依赖过某个数据，那个数据相应的dep.subs里也不存在当前watcher，所以要将当前watcher加入到数据的dep.subs里
-    （2）事后清理：
-
-## 响应式原理 
+## 概述
+|Vue1.0|Vue2.0|
+|-|-|
+|一个对象属性对应一个dep，一个dep对应多个watcher(watcher也是细粒度的)(一个对象属性可能在多个标签使用，那么就会有对应多个watcher，这些watcher都会放入到这个对象属性唯一对应的dep中)，但数据过大时，就会有很多个watcher，就会出现性能问题；|引入VDOM，给每个vue组件绑定一个watcher(渲染watcher)，这个组件上的数据的dep中都包含有该watcher，当该组件数据发生变化时，就会通知watcher触发update方法，生成VDOM，和旧的VDOM进行比较，更新改变的部分，极大的减少了watcher的数量，优化了性能；（所以，在Vue2.0中是一个组件对应一个watcher）|
+## 响应式原理
 涉及到的知识点
 1. MVVM
 2. typeof
+
+|Observer|Dep|Watcher|
+|-|-|-|
+|辅助的可观测类，数组/对象通过它的转化，可成为可观测数据|扮演观察目标的角色，每一个数据都会有Dep类实例，它内部有个subs队列，subs就是subscribers的意思，保存着依赖本数据的观察者，当本数据变更时，调用dep.notify()通知观察者|扮演观察者的角色，进行观察者函数的包装处理。如render()函数，会被进行包装成一个Watcher实例| 
 ### 定义VUE类
 ```js
 class Vue {
@@ -441,8 +432,7 @@ depend() {
 1. [剖析 Vue.js 内部运行机制](https://juejin.cn/book/6844733705089449991/section/6844733705211084808)
 2. [文献1 作者学习vue源码的仓库地址](https://github.com/answershuto/learnVue/tree/master/vue-src)
 3. [深入解析Vue依赖收集原理](https://zhuanlan.zhihu.com/p/45081605)
-4. https://www.cnblogs.com/cjw-ryh/p/Vue.html
-5. https://vue-js.com/topic/5fd362c44590fe0031e594ed
-6. https://segmentfault.com/a/1190000016333054
-7. http://hcysun.me/2017/03/03/Vue%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/
-8. https://www.yuque.com/chenshier/chuyi/epy88d
+4. [结合源码聊一聊Vue的响应式原理__Vue.js](https://vue-js.com/topic/5fd362c44590fe0031e594ed)
+5. [vue响应式原理](https://segmentfault.com/a/1190000016333054)
+6. [Vue2.1.7源码学习](http://hcysun.me/2017/03/03/Vue%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/)
+7. [Vue源码笔记系列](https://www.yuque.com/chenshier/chuyi/epy88d)
