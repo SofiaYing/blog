@@ -1,16 +1,62 @@
 ---
-title: 原型模式
+title: 原型
 date: 2020-12-21
 categories:
   - frond-end
 tags :
   - design patterns
+  - base
 ---
+# 原型/原型链/class/原型模式
+
+## 原型模式
 原型模式不仅是一种设计模式，它还是一种编程范式（programming paradigm），是 JavaScript 面向对象系统实现的根基。
 借助Prototype来实现对象的创建和原型的继承，那么我们就是在应用原型模式。
 
-java中原型模式的出现是为了实现类型之间的解耦？理解是new时需要注意传入数据类型，但是copy不用考虑这种问题
-## 原型链的作用
+## 原型与原型链
+**原型链**：最开始发明的原因是为了节省内存, __ proto __指向一个原型，通过逐级向上查找直至 Object 的原型为止（是原型链查询中实际用到的，它总是指向 prototype）。
+**原型**：prototype （在定义构造函数时自动创建，它总是被 __proto__ 所指）
+**注意**：开发时不要直接用__proto__这个属性，性能十分低
+```js
+var obj1 = {name:'YY'}
+var obj2 = {'age':18}
+console.dir(obj1)  //打印所有属性及属性值
+//name:"YY"
+//__proto__:（存储一个地址，指向它(继承)的(原型prototype)共有属性）
+//  constructor:
+//  toString:(常用)
+//  valueOf:(常用)
+//  ...
+​
+obj1.__proto__ === obj2.__proto__  //ture
+//注意：开发时不要直接用__proto__这个属性，性能十分低
+```
+总结：
+- prototype是函数的原型对象，即 **prototype是一个对象**，它会被对应的 __ proto __引用。
+- 要知道自己的 __ proto __引用了哪个 prototype，只需要看看是哪个构造函数构造了它，那它的 __ proto __就是那个构造函数的 prototype。
+- (理解成为第一句和第二句话的一个例外)
+所有的构造函数的原型链最后都会引用 Object构造函数的原型，即可以理解 Object构造函数的原型是所有原型链的最底层，即 
+```js
+Object.prototype.__ proto __=== null
+```
+```js
+function Foo (y){
+    this.y = y
+}
+var b = new Foo(20)
+​
+b.__proto__ === Foo.prototype
+Foo.__proto__ === Function.prototype
+Function.__proto__ === Function.prototype
+Array.__proto__ === Function.prototype
+Function.prototype.__proto__ === Object.prototype
+Object.prototype.__proto__ === null
+```
+![原型链](./images/prototype.png)
+
+
+
+## 类
 ```js
 //无原型链，每个实例的共有属性都会消耗一份内存
 var dogs = []
@@ -123,7 +169,7 @@ function myNew(constructor){
     
     let newObject = Object.create(constructor.prototype)
     
-    //判断构造函数返回值
+    //除去构造函数的其余参数
     //var argsArr = [...args]   //myNew(constructor,...args)
     //var argsArr = Array.from(arguments).slice(1)
     //var argsArr = [].slice.call(arguments,1)
@@ -137,6 +183,8 @@ function myNew(constructor){
     //如果构造函数没有返回对象类型`Object`(包含`Functoin`, `Array`, `Date`, `RegExg`, `Error`)，那么`new`表达式中的函数调用会自动返回这个新的对象。
     return newObject  
 }
+
+//使用 instance = myNew(constructor,options)
 ```
 
 ## 继承
@@ -222,7 +270,7 @@ Corgi.prototype = Object.create(Dogs.prototype)
 Corgi.prototype.wagTail = function(){}
 Corgi.prototype.legs = 'short'
 ​
-var laifu = new Corgi({species'Corgi',sound:'汪汪汪',character:'活泼'})
+var laifu = new Corgi({species:'Corgi',sound:'汪汪汪',character:'活泼'})
 ```
 ## ES6：Class
 ```js
@@ -248,11 +296,23 @@ class Corgi extends Dogs{
 }
 ```
 
-java中的面向对象
+关于java相关知识的一些补充，帮助理解：
+Java/C++ 的特性是什么？它们是强类型的静态语言。
+三大特点（但并不是面向对象独有）
+封装：隐藏细节，对外方便合作（API），对内减轻思维负担（同一功能只写一次）（函数也能起到封装作用）
+继承：可以复用代码。【js中ES6之前用原型链实现共有属性继承】
+多态：让代码更灵活。（拥有多重身份，属性特点，如div.childNodes 节点 div.children 元素节点）（js是动态语言，其实就是多态的）
+（补充说明：同一个操作作用于不同的对象上，可以产生不同的解释和不同的执行结果）
+多态最常见的2种实现方式：
+- 覆盖
+- 重载
+覆盖指子类重新定义父类方法，这正好就是基于prototype继承的。
+重载是指多个同名但参数不同的方法，这个JavaScript确实没有。）
+
+java中的class：
 class/abstract/interface
-java中的类设计更完整
-private/default/protect/public + 类型(如Long/Int等)
-javascript中要实现这些概念需要去模仿
+java中的类设计更完整：private/default/protect/public + 类型(如Long/Int等)
+javascript中要实现这些概念需要去模仿，但是底层原理是一样的，如共有方法也都是存储在同一块地址上，避免造成空间的浪费
 ```js
 function Create(){
   privateFunction()
@@ -263,7 +323,11 @@ class Create{
   static privateFunction()
   protectFunction(){}
 }
+
+Create.privateFunction()
+createInstance.protectFuntion()
 ```
+
 java中的Abstract和Interface（类似于factoryPattern.md中栗子中的抽象类）：
 共同点
 A.两者都是抽象类，都不能实例化
@@ -277,16 +341,11 @@ interface的应用场合
 A. 类与类之间需要特定的接口进行协调，而不在乎其如何实现。
 
 java中使用原型模式，举个栗子：
+（java中原型模式的出现是为了实现类型之间的解耦？理解是new时需要注意传入数据类型，但是copy不用考虑这种问题）
 连接数据库时，初始化声明可能很复杂（如用户，密码，数据库地址等等以及自己的方法）,
 如果每次都要重复这个过程就很复杂，就可以事先做好一个模板，再用的时候直接拿到一个副本即可，这里面还可以设计回收池的问题，如一开始先声明很多个模板，然后自己的方法那为空，使用的时候将它们的副本放到池子里，就可以在池子里拿出来用，用过之后再释放资源。
 
 
-
-
-
-
-
-
-
 参考文献：
 1.[能否模拟实现JS的new操作符](https://juejin.im/post/5bde7c926fb9a049f66b8b52)
+2.[JavaScript 原型链](https://juejin.im/entry/5883672c570c350062be16e5)
