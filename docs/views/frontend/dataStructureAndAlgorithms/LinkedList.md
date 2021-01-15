@@ -43,3 +43,101 @@ for(let i=0;i<index && node;i++){
   node = node.next
 }
 ```
+真题描述：将两个有序链表合并为一个新的有序链表并返回。新链表是通过拼接给定的两个链表的所有结点组成的
+```js
+function concat(l1,l2){
+  let resList = new nodeList();
+  let cur = resList
+  while(l1 && l2){
+    if(l1.val < l2.val){
+      cur.next = l1
+      l1 = l1.next
+    }else{
+      cur.next = l2
+      l2 = l2.next
+    }
+    cur = cur.next
+  }
+  // 处理链表不等长的情况
+  cur.next = l1!==null?l1:l2
+  return head.next
+}
+```
+真题描述：给定一个排序链表，删除所有重复的元素，使得每个元素只出现一次。
+```js
+function delDuplicates(list){
+  let cur = list
+
+  while(cur !== null && cur.next !== null){
+    if(cur.next.val === cur.val){
+      cur.next = cur.next.next
+    }else{
+      cur = cur.next
+    }
+  }  
+
+  return list
+}
+```
+dummy结点： 处理掉头结点为空的边界问题
+其实在链表题中，经常会遇到这样的问题：链表的第一个结点，因为没有前驱结点，导致我们面对它无从下手。这时我们就可以用一个 dummy 结点来解决这个问题。
+所谓 dummy 结点，就是咱们人为制造出来的第一个结点的前驱结点，这样链表中所有的结点都能确保有一个前驱结点，也就都能够用同样的逻辑来处理了。
+
+真题描述：给定一个排序链表，删除所有含有重复数字的结点，只保留原始链表中 没有重复出现的数字。
+```js
+function delPublicates(list){
+  let dummy = new ListNode()
+  dummy.next = list
+  let cur = dummy 
+  while(cur.next && cur.next.next){
+    if(cur.next.val === cur.next.next.val){
+      let val = cur.next.val
+      while(cur.next && cur.next.next===val){
+        cur.next = cur.next.next
+      }
+    }else{
+      cur = cur.next
+    }
+  }
+}
+```
+
+快慢指针与多指针
+链表题目中，有一类会涉及到反复的遍历。涉及反复遍历的题目，题目本身虽然不会直接跟你说“你好，我是一道需要反复遍历的题目”，但只要你尝试用常规的思路分析它，你会发现它一定涉及反复遍历；同时，涉及反复遍历的题目，还有一个更明显的特征，就是它们往往会涉及相对复杂的链表操作，比如反转、指定位置的删除等等。
+
+解决这类问题，我们用到的是双指针中的“快慢指针”。快慢指针指的是两个一前一后的指针，两个指针往同一个方向走，只是一个快一个慢。快慢指针严格来说只能有俩，不过实际做题中，可能会出现一前、一中、一后的三个指针，这种超过两个指针的解题方法也叫“多指针法”。
+
+快慢指针+多指针，双管齐下，可以帮助我们解决链表中的大部分复杂操作问题。
+
+
+
+dummy 结点：它可以帮我们处理掉头结点为空的边界问题，帮助我们简化解题过程。因此涉及链表操作、尤其是涉及结点删除的题目（对前驱结点的存在性要求比较高），我都建议大家写代码的时候直接把 dummy 给用起来，建立好的编程习惯
+```js
+const dummy = new ListNode()
+dummy.next = head
+```
+
+真题描述：给定一个链表，删除链表的倒数第 n 个结点，并且返回链表的头结点。
+
+```js
+function delDuplicates(list,n){
+  let dummy = new NodeList()
+  dummy.next = list
+  let slow = dummy.next
+  let fast = dummy.next
+  let count = 1
+
+  while(fast && fast.next){  
+    if(count<n){
+      fast = fast.next
+    }else{
+      slow = slow.next
+    }
+    count++
+  }
+
+  return count-1
+}
+
+
+```

@@ -2,4 +2,10 @@
 
 https://juejin.cn/post/6844903989197144078#heading-4
 链接中的离屏渲染，雪花都是一样大小，new 一个cacheSnow就可以了
+
+
+canvas save & restore
 [理解Canvas Context 的save() 和 restore()](https://juejin.cn/post/6844903879599996942)
+
+https://www.cnblogs.com/fangsmile/p/9530226.html
+
