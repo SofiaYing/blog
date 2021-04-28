@@ -1,3 +1,11 @@
+---
+title: 作用域
+date: 2020-2-21
+categories:
+  - frond-end
+tags :
+  - base
+---
 ### Scoping
 C系语言有块级作用域(block-level scope),当进入到一个块时，就像if语句，在这个块级作用域中会声明新的变量，这些变量不会影响到外部作用域。
 JavaScript是函数级作用域(function-level scope)。只有函数才会创建新的作用域
