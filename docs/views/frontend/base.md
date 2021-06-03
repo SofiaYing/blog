@@ -35,30 +35,13 @@ Microsoft维护着自己的EdgeHTML引擎，作为老的Trident引擎的替代�
 -o-       /* Opera浏览器(早期) */
 -ms-      /* Internet Explorer (不一定) */ 
 ```
-## typeof & instanceof
-typeof 返回一个值的数据类型
-```js
-typeof 123 // "number"
-typeof '123' // "string"
-typeof false // "boolean"
-typeof null // "object"  历史遗留问题
-typeof undefined // "undefined" 
-if (typeof v === "undefined") {} //typeof可以用来检查一个没有声明的变量，返回“undefined”而不报错
- 
-function f() {}
-typeof f // "function"
 
-typeof window // "object"
-typeof {} // "object"
-typeof [] // "object"
-```
-instanceof 返回一个布尔值，表示对象是否为某个构造函数的实例
-- instanceof检查整个原型链
-- instanceof运算符只能用于对象，不适用原始类型的值
-- undefined和null，instanceOf运算符总是返回false
-```js
-var d = new Date();
-d instanceof Date // true
-d instanceof Object // true
-```
 (前端入门)[https://github.com/qianguyihao/Web/]
+
+- document 接口表示任何在浏览器中载入的网页，并作为网页内容的入口，也就是DOM 树
+- document.body 返回当前文档中的<body>元素或者<frameset>元素
+- document.documentElement 是一个会返回文档对象（document）的根元素的只读属性（如HTML文档的 <html> 元素）
+
+box-sizing
+- content-box (default) 所设置的 width 与 height 只会应用到这个元素的内容区
+- border-box 设置的边框和内边距的值是包含在width内的(不包含margin)

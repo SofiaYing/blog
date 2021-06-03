@@ -1,3 +1,4 @@
+
 ```js
   window.requestAnimationFrame = (function() {
     return window.requestAnimationFrame ||
@@ -34,3 +35,4 @@ touch事件中的touches、targetTouches和changedTouches   clientX/clientY scre
 - changedTouches: 涉及当前(引发)事件的触摸点的列表
 
 [书籍HTML5+JavaScript动画基础源码](https://github.com/lamberta/html5-animation)
+

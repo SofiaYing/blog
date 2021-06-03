@@ -238,3 +238,7 @@ DeviceMotionEvent.requestPermission().then(function (state) {
 [ios 13 陀螺仪DeviceOrientationEvent需要申请用户权限 js](https://www.cnblogs.com/iroading/archive/2004/01/13/12633173.html)
 [在IOS中DeviceMotion及DeviceOrientation事件不触发的问题](https://blog.csdn.net/greenwishing/article/details/90258584)
 [解决ios13+动作与方向的权限的获取问题，从而导致无法实现摇一摇](https://blog.csdn.net/chendawen250/article/details/105415897?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromBaidu-1.control&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromBaidu-1.control)
+
+26. [canvas 跨域和缓存问题] (https://blog.csdn.net/u012755393/article/details/85130135)
+- 跨域 img.crossOrigin = 'Anonymous';
+- 缓存 cdn服务器设置缓存，第二次请求图片时，浏览器不会再向服务器发送请求，再次发生跨域错误。

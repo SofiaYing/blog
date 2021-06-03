@@ -8,7 +8,7 @@ tags :
 ---
 
 1. [基于 Js / JQuery / Vue / 微信小程序 / uni-app 的抽奖插件【大转盘 & 九宫格】](https://100px.net/demo/grid/yyjk.html)
-2. [渐变]https://uigradients.com/#Ohhappiness
+2. [渐变](https://uigradients.com/#Ohhappiness)
 
 3. https://codepen.io/
 4. https://tympanus.net/codrops/
@@ -24,3 +24,9 @@ https://www.html5rocks.com/zh/tutorials/internals/howbrowserswork/
 https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/#level-1-bossfight
 
 分屏插件 https://antoniandre.github.io/splitpanes/
+ES6兼容 http://kangax.github.io/compat-table/es6/
+用const还是let https://www.cnblogs.com/ziyunfei/p/6038213.html
+尤大推荐书 Effective JavaScript           exploring es6
+
+散射图插件 https://js.cytoscape.org/     https://gojs.net/latest/learn/
+excel库 https://oss.sheetjs.com 
