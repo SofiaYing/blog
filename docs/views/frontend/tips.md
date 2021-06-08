@@ -242,3 +242,6 @@ DeviceMotionEvent.requestPermission().then(function (state) {
 26. [canvas 跨域和缓存问题] (https://blog.csdn.net/u012755393/article/details/85130135)
 - 跨域 img.crossOrigin = 'Anonymous';
 - 缓存 cdn服务器设置缓存，第二次请求图片时，浏览器不会再向服务器发送请求，再次发生跨域错误。
+
+27. git push 问题 Unable to access ‘https://github.com/**/**/‘: OpenSSL SSL_read: Connection was aborted, errno 10053
+解决方案： git config --global http.sslVerify false
