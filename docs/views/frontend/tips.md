@@ -143,7 +143,7 @@ exitFullscreen()
 <meta name="force-rendering" content="webkit"/>
 如果有安装 Google Chrome Frame 插件则强制为Chromium内核，否则强制本机支持的最高版本IE内核，作用于IE浏览器：
 <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"/>
-19.隐藏滚动条
+19. 隐藏滚动条
 1）ios上需要事先预设好类名，安卓可以通过js动态添加类名 
 yuansu::-webkit-scrollbar {
    display: none;
@@ -179,27 +179,31 @@ yuansu::-webkit-scrollbar {
     border-radius: 10px;
     background-color: #ffffff;
 }
-20.获取宽高等
+
+20. 获取宽高等
 offsetWidth 或者 width等都无法获取到元素的小数位，都是整型
 解决方法1 window.getComputedStyle(element)
 function getStyle(element, attr) {         
     return window.getComputedStyle ? window.getComputedStyle(element, null)[attr] : element.currentStyle[attr];      
 }
 解决方法2 element.getBoundingClientRect()
-21.el-scrollbar
+
+21. el-scrollbar
+```js
   .el-scrollbar {
     .el-scrollbar__wrap {
       max-height:100%;
       //里层元素不要再设置高度
     }
   }
+```
 22. html draggable
 以下拖拽时跟随鼠标的待拖拽区域，简称为拖拽区域
 在chrome中，当可拖拽的元素为可滚动元素，并且拖拽区域有部分内容在可是区域外，如overflow:hidden，可能会将紧挨着的区域元素绘制进去
 解决方案：调整拖拽区域层级（或整个可拖拽元素），但该区域盖过下层时，就可正确绘制到需要拖拽的区域
 
 23. swiper内增加contenteditable元素不能编辑的问题
-
+!(参考图片)[./images/tips-swiper.png]
 可以通过修改源码解决，这个是6.+版本，https://github.com/nolimits4web/swiper/pull/3949/commits/fcf1f8e407ae30a10672f5903281fab5ad0389fa
 
 24. 解决body旋转90度后，swiper手势与页面移动方向相悖的问题

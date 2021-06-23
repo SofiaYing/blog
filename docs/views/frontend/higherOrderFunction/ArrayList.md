@@ -28,7 +28,7 @@ Array.from(document.querySelectorAll('div')) Array.from({1: 2,length:3}) // [und
 ```
 !(Array.from() 五个超好用的用途)[https://juejin.cn/post/6844903926823649293]
 
-### 方法二：Array.prototype.slice.call()
+### 方法二：Array.prototype.slice.call()/[].slice.call(arguments)
 - slice()方法可从已有的数组中返回选定的元素。
 - slice()方法可提取字符串的某个部分，并以新的字符串返回被提取的部分。
 - 注意： slice() 方法不会改变原始数组。
@@ -47,10 +47,12 @@ Array.prototype.slice = function(start,end){
 [1,2,3].slice(1) //[2,3]
 ```
 ### 方法三：扩展运算符（展开运算符）
+在函数调用时使用展开语法，等价于apply的方式。
 
 ### 方法四：Array.apply(null,arguments)
-apply() 方法调用一个具有给定this值的函数，以及以一个数组（或类数组对象）的形式提供的参数。
-在函数调用时使用展开语法，等价于apply的方式
+apply() 方法调用一个具有给定this值的函数，以及以一个**数组（或类数组对象）**的形式提供的参数。
+数组/类数组中的元素将作为单独的参数传给函数。
+
 
 **call VS apply**
 call()方法的作用和 apply() 方法类似，区别就是call()方法接受的是参数列表，而apply()方法接受的是一个参数数组。
