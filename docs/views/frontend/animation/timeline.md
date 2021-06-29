@@ -99,13 +99,38 @@ Timeline.prototype.add = fucntion(animation,startTime){
 ### delay
 
 ```js
-let passTime 
-if (curAnime.startTime < this.startTime){
-  //以时间轴开始时间为准
-  passTime = now - this.startTime - curAnime.delay
-}else{
-  //以动画加入时间为准
-  passTime = now - curAnime.startTime - curAnime.delay
+Timeline.prototype.start = function() {
+    this.startTime = Date.now()
+
+    this.tick = (t) => {
+        let now = Date.now()
+        for (let i = 0; i < this.animations.length; i++) {
+            let curAnime = this.animations[i]
+
+            // 播放经过这段时间相当于消耗掉的，不应影响时间轴
+            let passTime
+            if (curAnime.startTime < this.startTime){
+              //以时间轴开始时间为准
+              passTime = now - this.startTime - curAnime.delay
+            }else{
+              //以动画加入时间为准
+              passTime = now - curAnime.startTime - curAnime.delay
+            }
+
+            if (passTime > curAnime.during) {
+                this.animations.splice(i, 1)
+                currentTime = curAnime.during
+            }
+            //
+            if (passTime >= 0) {
+                curAnime.run(passTime)
+            }
+        }
+
+        requestAnimationFrame(this.tick)
+    }
+
+    this.tick()
 }
 ```
 ### pause
@@ -113,25 +138,7 @@ if (curAnime.startTime < this.startTime){
 Timeline.prototype.start = function() {
     this.startTime = Date.now()
     this.tick = () => {
-        let now = Date.now()
-
-        for (let i = 0; i < this.animations.length; i++) {
-            let curAnime = this.animations[i]
-
-            let passTime 
-            if (curAnime.startTime < this.startTime){
-              passTime = now - this.startTime
-            }else{
-              passTime = now - curAnime.startTime
-            }
-
-            if (passTime > curAnime.during) {
-                this.animations.splice(i, 1)
-
-                currentTime = curAnime.during
-            }
-            curAnime.run(passTime)
-        }
+        ...
         // 将计时器存储下来，以便于停止
         this.tickHandler = requestAnimationFrame(this.tick)
     }
@@ -145,7 +152,55 @@ Timeline.prototype.pause = function() {
 ```
 ### resume
 ```js
+function Timeline() {
+    this.animations = []
+    this.pauseDuring = 0  //暂停经过的时间
+    this.lastTime = 0  // 暂停时的时间点（上一次播放结束的时间）
+}
+Timeline.prototype.start = function() {
+    this.startTime = Date.now()
 
+    this.tick = (t) => {
+        let now = Date.now()
+        for (let i = 0; i < this.animations.length; i++) {
+            let curAnime = this.animations[i]
+
+            // 播放经过这段时间相当于消耗掉的，不应影响时间轴
+            let passTime
+            if (this.startTime > curAnime.startTime) {
+                passTime = now - this.startTime - curAnime.delay - this.pauseDuring
+            } else {
+                passTime = now - curAnime.startTime - curAnime.delay - this.pauseDuring
+            }
+
+            if (passTime > curAnime.during) {
+                this.animations.splice(i, 1)
+                currentTime = curAnime.during
+            }
+
+
+            // 有可能出现时间还没到该播放动画的时候，比如轴播放到第8s，第9s才开始播放某动画，8-9=-1，要对该情况进行判断
+            if (passTime >= 0) {
+                curAnime.run(passTime)
+            }
+        }
+
+        this.tickHandler = requestAnimationFrame(this.tick)
+    }
+
+    this.tick()
+}
+
+Timeline.prototype.pause = function() {
+    this.lastTime = Date.now()
+    cancelAnimationFrame(this.tickHandler)
+}
+
+Timeline.prototype.resume = function() {
+    let now = Date.now()
+    this.pauseDuring += (now - this.lastTime)
+    this.tick()
+}
 ```
 
 
