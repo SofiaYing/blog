@@ -30,3 +30,7 @@ ES6兼容 http://kangax.github.io/compat-table/es6/
 
 散射图插件 https://js.cytoscape.org/     https://gojs.net/latest/learn/
 excel库 https://oss.sheetjs.com 
+
+svg图案 Flaticon(https://www.flaticon.com/)、iconfont、Iconfinder或icons8等网站会提供很多免费的svg图案。
+
+[腾讯 AlloyTeam](https://github.com/AlloyTeam)

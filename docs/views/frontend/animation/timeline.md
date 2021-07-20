@@ -556,6 +556,9 @@ function timeline(params = {}) {
 # bilibili官网的banner是如何实现的
 [bilibili Autumn Banner](https://codepen.io/stevenlei/pen/MWeLEyx)
 [bilibili Wintter Banner](https://codepen.io/stevenlei/pen/VwKQwNj)
+[Bilibili网站首图动态Banner开发实现](https://juejin.cn/post/6944898818164916237)
+[如何使用 Vue 3 和 Canvas 实现哔哩哔哩首页 banner?](https://juejin.cn/post/6884922737077256200)
+[哔哩哔哩春季动态banner是怎么实现的？](https://juejin.cn/post/6951319753717710879#comment)
 
 
 参考文献
@@ -566,3 +569,5 @@ function timeline(params = {}) {
 5. [用65行代码实现JavaScript动画序列播放](https://juejin.cn/post/6943433312371212302)
 6. [关于动画，你需要知道的](https://h5jun.com/post/animations-you-should-know.html)
 7. [合成层](https://fed.taobao.org/blog/taofed/do71ct/performance-composite/) 
+8. [Tips for Writing Animation Code Efficiently](https://css-tricks.com/tips-for-writing-animation-code-efficiently/)
+9. [CSS技巧：逐帧动画抖动解决方案](https://jelly.jd.com/article/6006b1045b6c6a01506c87f0)

@@ -35,4 +35,6 @@ touch事件中的touches、targetTouches和changedTouches   clientX/clientY scre
 - changedTouches: 涉及当前(引发)事件的触摸点的列表
 
 [书籍HTML5+JavaScript动画基础源码](https://github.com/lamberta/html5-animation)
+[贝塞尔曲线](https://cubic-bezier.com/#.17,.67,.83,.67)
+[张鑫旭翻译的Snap.svg](https://www.zhangxinxu.com/github/demo-Snap.svg/demo/basic/)
 

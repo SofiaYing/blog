@@ -1,0 +1,1 @@
+1. 用scoped属性实现组件样式私有化的时候,如何对子组件（如引入了element-ui）设置样式 https://vue-loader.vuejs.org/zh/guide/scoped-css.html
