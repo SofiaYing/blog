@@ -188,15 +188,6 @@ function getStyle(element, attr) {
 }
 解决方法2 element.getBoundingClientRect()
 
-21. el-scrollbar
-```js
-  .el-scrollbar {
-    .el-scrollbar__wrap {
-      max-height:100%;
-      //里层元素不要再设置高度
-    }
-  }
-```
 22. html draggable
 以下拖拽时跟随鼠标的待拖拽区域，简称为拖拽区域
 在chrome中，当可拖拽的元素为可滚动元素，并且拖拽区域有部分内容在可是区域外，如overflow:hidden，可能会将紧挨着的区域元素绘制进去
@@ -249,3 +240,7 @@ DeviceMotionEvent.requestPermission().then(function (state) {
 
 27. git push 问题 Unable to access ‘https://github.com/**/**/‘: OpenSSL SSL_read: Connection was aborted, errno 10053
 解决方案： git config --global http.sslVerify false
+
+28. 通过js改变value，并不会触发input的change,input等事件
+
+29. element-ui el-input 和 el-input textarea 字体样式不一样，是由于原生textarea加载字体的问题，可以在需要的地方显示重写textarea的font-family属性

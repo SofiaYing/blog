@@ -6,9 +6,9 @@ https://juejin.cn/book/6844733800300150797/section/6844733800346304526
 stringObject.split(separator,howmany)
 
 数组方法 
-- splice 方法向/从数组中添加/删除项目，然后返回被删除的项目
+- splice 方法向/从数组中添加/删除项目，然后返回被删除的项目（改变原始数组）
 arrayObject.splice(index,howmany,item1,.....,itemX)
-- slice 方法可从已有的数组中返回选定的元素
+- slice 方法可从已有的数组中返回选定的元素（浅拷贝，原始数组不会被改变）
 arrayObject.slice(start,end)
 
 ### 反转字符串

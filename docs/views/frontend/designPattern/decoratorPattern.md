@@ -1,20 +1,12 @@
-### 
+### 栗子1
+1. 仍然保留现在所有的功能
+2. 增加发射导弹功能
 ```js
 function Plane() {}
-
 Plane.prototype.fire = function () {
-  console.info('开枪，哒哒哒')
+  console.log('fire')
 }
 
-const p = new Plane()
-p.fire()
-
-console.info('--------------')
-
-/*
-1. 仍然保留现在所有的功能
-2. 发射导弹
- */
 function upgrade(target, callback) {
   // 1. 缓存老方法
   const oldFn = Plane.prototype[target]
@@ -22,8 +14,8 @@ function upgrade(target, callback) {
   Plane.prototype[target] = function (...args) {
     // 3. 添加新的功能
     callback()
-    // 4. 调用老功能，并返回值
-    return oldFn.apply(this, args)
+    // 4. 调用老功能
+    oldFn.apply(this, args)
   }
 }
 
@@ -37,14 +29,9 @@ upgrade('fire', () => {
   console.info('发射导弹，咚咚咚')
 })
 
-p.fire()
-// 发射导弹
-// 开枪，哒哒哒
+const p = new Plane()
 
-/*
-期待 投掷炸弹
- */
-console.info('----------')
+p.fire()
 
 upgrade('fire', () => {
   console.info('投掷炸弹，DuangDuangDuang')
@@ -52,7 +39,8 @@ upgrade('fire', () => {
 
 p.fire()
 ```
-### 
+### 栗子2
+继承
 ```js
 function Plane() {}
 
@@ -63,57 +51,20 @@ Plane.prototype.fire = function () {
 class NewPlane extends Plane {
   fire() {
     console.info('发射导弹2')
+    // 执行 super.method(...) 来调用一个父类方法。
+    // 执行 super(...) 来调用一个父类 constructor（只能在我们的 constructor 中用）
     super.fire()
   }
 }
 
 const np = new NewPlane()
 np.fire()
-
-//
-//
-// const p = new Plane()
-// p.fire()
-//
-// console.info('--------------')
-//
-// /*
-// 1. 仍然保留现在所有的功能
-// 2. 发射导弹
-//  */
-// function upgrade(callback) {
-//   const oldFn = Plane.prototype.fire
-//   Plane.prototype.fire = function (...args) {
-//     // 添加新的功能
-//     callback()
-//     // 调用老功能
-//     oldFn.apply(this, args)
-//   }
-// }
-//
-// upgrade(() => {
-//   console.info('发射导弹，咚咚咚')
-// })
-//
-// p.fire()
-// // 发射导弹
-// // 开枪，哒哒哒
-//
-// /*
-// 期待 投掷炸弹
-//  */
-// console.info('----------')
-//
-// upgrade(() => {
-//   console.info('投掷炸弹，DuangDuangDuang')
-// })
-//
-// p.fire()
-
 ```
-### 
+### 栗子3
+ES7 装饰器
 ```js
-@log
+// target 就是被装饰的类本身
+@log 
 class Plane {
   @upgrade
   fire() {
@@ -168,11 +119,15 @@ export default function (Vue) {
   } else {
     // override init and inject vuex init procedure
     // for 1.x backwards compatibility.
+    // 1.缓存老方法
     const _init = Vue.prototype._init
+    // 2.重写老方法
     Vue.prototype._init = function (options = {}) {
+      // 3. 将新方法作为参数传给老方法
       options.init = options.init
         ? [vuexInit].concat(options.init)
         : vuexInit
+      // 调用
       _init.call(this, options)
     }
   }
@@ -217,8 +172,10 @@ const methodsToPatch = [
  */
 methodsToPatch.forEach(function (method) {
   // cache original method
+  // 缓存老方法
   const original = arrayProto[method]
   def(arrayMethods, method, function mutator (...args) {
+    // 调用老方法
     const result = original.apply(this, args)
     const ob = this.__ob__
     let inserted

@@ -153,4 +153,66 @@ export function install (_Vue) {
 ```
 假如 install 里没有单例模式的逻辑，如果在一个应用里不小心多次安装了插件，失去了单例判断能力的 install 方法，会为当前的Vue实例重新注入一个新的 Store，也就是说你中间的那些数据操作全都没了，一切归 0。因此，单例模式在此处是非常必要的。
 
+### 实栗3
+全局模态框
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+</head>
+<style>
+    #modal {
+        height: 200px;
+        width: 200px;
+        line-height: 200px;
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        border: 1px solid black;
+        text-align: center;
+    }
+</style>
+<body>
+	<button id='open'>打开弹框</button>
+	<button id='close'>关闭弹框</button>
+</body>
+<script>
+    // 核心逻辑，这里采用了闭包思路来实现单例模式
+    const Modal = (function() {
+    	let modal = null
+    	return function() {
+        if(!modal) {
+          modal = document.createElement('div')
+          modal.innerHTML = '我是一个全局唯一的Modal'
+          modal.id = 'modal'
+          modal.style.display = 'none'
+          document.body.appendChild(modal)
+        }
+        return modal
+    	}
+    })()
+    
+    // 点击打开按钮展示模态框
+    document.getElementById('open').addEventListener('click', function() {
+        // 未点击则不创建modal实例，避免不必要的内存占用;此处不用 new Modal 的形式调用也可以，和 Storage 同理
+    	const modal = new Modal()
+    	modal.style.display = 'block'
+    })
+    
+    // 点击关闭按钮隐藏模态框
+    document.getElementById('close').addEventListener('click', function() {
+    	const modal = new Modal()
+    	if(modal) {
+    	    modal.style.display = 'none'
+    	}
+    })
+</script>
+</html>
+
+
+
+
+```
 [JavaScript 设计模式核⼼原理与应⽤实践](https://juejin.cn/book/6844733790204461070/section/6844733790267375624)

@@ -349,3 +349,10 @@ java中使用原型模式，举个栗子：
 参考文献：
 1.[能否模拟实现JS的new操作符](https://juejin.im/post/5bde7c926fb9a049f66b8b52)
 2.[JavaScript 原型链](https://juejin.im/entry/5883672c570c350062be16e5)
+
+
+
+
+
+// 待细看
+[（JavaScript）中的类继承（extends、重写方法、重写constructor、重写类字段、[[HomeObject]]）](https://blog.csdn.net/AnitaSun/article/details/110816920)
