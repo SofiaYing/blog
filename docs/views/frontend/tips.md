@@ -244,3 +244,10 @@ DeviceMotionEvent.requestPermission().then(function (state) {
 28. 通过js改变value，并不会触发input的change,input等事件
 
 29. element-ui el-input 和 el-input textarea 字体样式不一样，是由于原生textarea加载字体的问题，可以在需要的地方显示重写textarea的font-family属性
+
+30. 关闭浏览器之后发送请求问题
+- 不稳定： 监听unload事件，用img的src发送请求。图片和后端建立链接，耗时了，所以不一定能到后端，浏览器不一定会等图片加载完毕然后再卸载文档
+- 不稳定： Navigator.sendBeacon：
+[Navigator.sendBeacon()](https://developer.mozilla.org/zh-CN/docs/Web/API/Navigator/sendBeacon)
+[Beacon API is broken](https://volument.com/blog/sendbeacon-is-broken#comments)
+- ajax

@@ -1,4 +1,74 @@
+## CSS动画
+### Transtion
+- transtion-property
+- transtion-during: s/ms 
+- transtion-delay: 可以为负值，如-1s，及从第1s开始运动
+- transtion-timing-function: 
+  1. 贝塞尔曲线：liner / ease / ease-in / ease-out / ease-in-out / cubic-bezier(n,n,n,n)
+  2. 阶跃函数（Steps）: 
+    - steps(9, start): 
+      - 9 阶数，表示将过程和时间分为9步。
+      - start 表示在动画开始时，我们需要立即开始第一段的动画。
+      - end（默认）表示改变不应该在最开始的时候发生，而是发生在每一段的最后时刻。
+    - step-start: 等价于steps(1, start)。 使用此计时功能，动画或过渡将突然更改为结束状态并保持在该位置直到动画结束。
+    - step-end: 等价于 steps(1, end)。 使用此计时功能，动画或过渡将保持其初始状态直到结束，然后直接跳转到其最终位置。
+- transitionend事件: CSS 动画完成后，会触发 transitionend 事件。
+  1. event.propertyName ：当前完成动画的属性，这在我们同时为多个属性加上动画时会很有用。
+  2. event.elapsedTime ：动画完成的时间（按秒计算），不包括 transition-delay。
+```html
+<!-- 栗子1 -->
+<button id="growing">Click me</button>
 
+<style>
+#growing {
+  transition: font-size 3s, color 2s;
+}
+</style>
+
+<script>
+growing.onclick = function() {
+  this.style.fontSize = '36px';
+  this.style.color = 'red';
+};
+</script>
+
+<!-- 栗子2 -->
+<div id="stripe">0123456789</div>
+<style>
+#stripe {
+  display: inline-block
+}
+
+#stripe.animate {
+  transform: translate(-90%);
+  transition-property: transform;
+  transition-duration: 9s;
+  transition-timing-function: linear;
+}
+</style>
+<script>
+stripe.onclick = function() {
+  stripe.classList.add('animate');
+};
+</script>
+```
+### Keyframes
+```html
+<style>
+  @keyframes loading {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+  .load {
+    animation: loading 1s liner;
+  }
+</style>
+```
+## js动画
 ```js
   window.requestAnimationFrame = (function() {
     return window.requestAnimationFrame ||

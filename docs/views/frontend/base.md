@@ -37,10 +37,96 @@ Microsoft维护着自己的EdgeHTML引擎，作为老的Trident引擎的替代�
 ```
 
 (前端入门)[https://github.com/qianguyihao/Web/]
-
-- document 接口表示任何在浏览器中载入的网页，并作为网页内容的入口，也就是DOM 树
-- document.body 返回当前文档中的<body>元素或者<frameset>元素
+## 遍历DOM
+- document对象 表示任何在浏览器中载入的网页，并作为网页内容的入口，也就是DOM 树
 - document.documentElement 是一个会返回文档对象（document）的根元素的只读属性（如HTML文档的 <html> 元素）
+- document.body 返回当前文档中的<body>元素或者<frameset>元素
+- document.head <head> 标签
+**在 DOM 的世界中，null 就意味着“不存在”**
+### 子节点：childNodes, firstChild, lastChild
+- childNodes: 集合（**是一个类数组的可迭代对象**）列出了所有子节点(**直系的子元素**)，包括文本节点。`document.body.childNodes`
+- firstChild: 访问第一个子元素的快捷方式
+- lastChild: 访问最后一个子元素的快捷方式
+  1. 集合
+  - 可以用for...of迭代它（集合是可迭代的，提供了所需要的 Symbol.iterator 属性）。
+  - 无法使用数组的方法，因为它不是一个数组。
+  - 不要使用for...in, 因为会列举所有可枚举属性（注意这不是Set，Set的属性默认是不可枚举的）
+  ```js
+  let dom = document.documentElement.childNodes
+  for (let p in dom) {
+    console.log(p) 
+  }
+  //0 1 2 entries keys values forEach length item
+  ```
+  2. 只读：不能通过类似 childNodes[i] = ... 的操作来替换一个子节点。
+  3. 实时：如果保留一个对 elem.childNodes 的引用，然后向 DOM 中添加/移除节点，那么这些节点的更新会自动出现在集合中。
+
+(带你手写一个对象，深入理解可迭代对象是什么，与类数组有什么区别)[https://blog.csdn.net/LeviDing/article/details/109793189]
+### 兄弟节点Sibling和父节点
+- 下一个兄弟节点：nextSibling
+- 上一个兄弟节点：prevSibling
+- 父节点：parentNode
+
+### 纯元素导航
+仅返回代表标签的和形成页面结构的元素节点。（如childNodes是包含所有节点的，如文本节点，元素节点，甚至如果注释节点存在的话，也能访问到。）
+- children — 仅那些作为元素节点的子代的节点。
+- firstElementChild，lastElementChild — 第一个和最后一个子元素。
+- previousElementSibling，nextElementSibling — 兄弟元素。
+- parentElement — 父元素。
+```js
+//html元素的父节点是document，但document不是元素类型的节点
+document.documentElement.parentNode  // document
+document.documentElement.parentElement  // null
+
+// 当我们想从任意节点 ele 到 <html> 而不是到 document 时，这个细节可能很有用
+while( ele = ele.parentElement){  // 向上，直到html
+  // do something
+}
+```
+## 搜索一个元素
+- document.getElementById(id)
+- **document.querySelector(css)** 相当于 document.querySelectorAll(css)[0]
+- **document.querySelectorAll(css)**
+- elem.closest(css) 查找与 CSS 选择器匹配的最近的祖先, elem自己也会被搜索
+- 更建议使用document.querySelector: 以下都是实时的
+  - elem.getElementsByTagName(tag)
+  - document.getElementsByName(name)
+  - elem.getElementsByClassName(className)
+
+实时的（live）集合: 这样的集合始终反映的是文档的当前状态，并且在文档发生更改时会“自动更新”。
+在下面的例子中，有两个脚本。
+第一个创建了对 <div> 的集合的引用。截至目前，它的长度是 1。
+第二个脚本在浏览器再遇到一个 <div> 时运行，所以它的长度是 2。
+```html
+<div>First div</div>
+
+<script>
+  //非实时的
+  let queryDivs = document.querySelectorAll('div');
+  alert(divs.length); // 1
+
+  //实时的
+  let getDivs = document.getElementsByTagName('div');
+  alert(divs.length); // 1
+</script>
+
+<div>Second div</div>
+
+<script>
+  alert(queryDivs.length); // 1
+  alert(getDivs.length); // 2
+</script>
+```
+### 其他
+nodeName/tagName： 用于元素名，标签名（除了 XML 模式，都要大写）。对于非元素节点，nodeName 描述了它是什么。只读。
+
+attribute 大小写不敏感
+- elem.hasAttribute(name) — 检查特性是否存在。
+- elem.getAttribute(name) — 获取这个特性值。
+- elem.setAttribute(name, value) — 设置这个特性值。
+- elem.removeAttribute(name) — 移除这个特性。
+- elem.attributes — 读取所有特性
+
 
 box-sizing
 - content-box (default) 所设置的 width 与 height 只会应用到这个元素的内容区

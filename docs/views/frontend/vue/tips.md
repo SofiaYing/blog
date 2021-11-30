@@ -193,3 +193,48 @@ props: ["inputObj"]
   <el-dialog :visible.sync="xxx"></el-dialog>
 </div>
 ```
+7. 记录一个视图不更新的问题
+问题描述：上传图片后对vuex内的对象data的img属性进行更新，首次视图更新成功，再次失败。
+原因： 页面内有ajax请求，会对data进行重新赋值，由于img是临时属性，所以接口返回的
+data内是没有img属性的，虽然vuex内声明了默认值，但是ajax请求内数据已经被覆盖，
+img已经丢失，也就没有绑定监听，所以视图更新失败。
+解决办法：请求赋值时，添加img属性即可。
+
+8. 如何根据环境配置不同路由
+```js
+// 1. 增加相应环境配置文件 .env.static
+NODE_ENV=development
+VUE_APP_PROJECT_NAME=static
+
+// 2. package.json 增加相应命令
+"scripts": {
+  "serve": "vue-cli-service serve",
+  "build": "vue-cli-service build",
+  "lint": "vue-cli-service lint",
+  "serve:static": "vue-cli-service serve --mode static",
+  "build:static": "vue-cli-service build --mode static"
+},
+
+// 3. main.js 修改路由引用路径
+import router from './router/PROJECT_NAME.js'
+
+// 4. vue.config.js 增加重命名配置
+const path = require('path')
+const webpack = require('webpack')
+let projectName = process.env.VUE_APP_PROJECT_NAME === 'static' ? 'staticIndex' : 'index'
+
+module.exports = {
+  publicPath: './',
+  outputDir: process.env.VUE_APP_PROJECT_NAME === 'static' ? 'staticDist' : 'dist',
+  productionSourceMap: process.env.NODE_ENV === 'development' ? true : false,
+  configureWebpack: {
+    plugins: [
+      new webpack.NormalModuleReplacementPlugin(/(.*)PROJECT_NAME(\.*)/, function(resourse) {
+        resourse.request = resourse.request.replace(/PROJECT_NAME/, `${projectName}`)
+      })
+    ]
+  },
+}
+
+// 5. router文件夹下增加相应路由入口文件 staticIndex.js
+```
