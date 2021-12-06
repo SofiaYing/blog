@@ -73,6 +73,7 @@ function isArrayLike(o) {
 **注意**：对于这些能够改变原数组的方法，要**注意避免在循环遍历中改变原数组的选项**，比如: 改变数组的长度，导致遍历的长度出现问题。
 
 - `splice` 添加/删除数组元素
+英文释义：胶接，粘接
 ```js
 /**
  * @param index：必需。整数，规定添加/删除项目的位置，使用负数可从数组结尾处规定位置。
@@ -148,7 +149,7 @@ arr.unshift(2, 3) // [2, 3, 1, 2]
 ```js
 /**
  * @param target 必需。从该位置开始替换数据。如果为负值，表示倒数。
- * @param start 可选。从该位置开始读取数据，默认为 0。如果为负值，表示倒数。
+ * @param start 可选。从该位置开始读取数据，默认为 0。如果为负值，表示倒数(开始索引会被自动计算成为 length+start)。
  * @param end 可选。到该位置前停止读取数据，默认等于数组长度。使用负数可从数组结尾处规定位置。（不包含本身）
  * @return {*}
  */
@@ -159,47 +160,342 @@ arr.copyWithin(1, 2, 4) // [1, 3, 4, 4, 5]  注意：数组长度不会改变
 arr.copyWithin(0, -2, -3) // [1, 2, 3, 4, 5] end索引小于等于start 相当于什么都没复制
 arr.copyWithin(0, -4, -2) // [2, 3, 3, 4, 5] 
 ```
-`fill`
+`fill` 用一个固定值填充一个数组中从起始索引到终止索引内的全部元素。不包括终止索引。
+```js
+array.fill(value, start = 0, end = this.length)
+['a', 'b', 'c'].fill(7) // [7, 7, 7]
+['a', 'b', 'c'].fill({age: 12}, 1, 2) // ['a', {age: 12}, 'c']  注：当一个对象被传递给 fill方法的时候, 填充数组的是这个对象的引用。
+```
+### 不改变原数组的方法（8个）
+- ES5: slice / join / toString / toLocaleString / concat / indexOf / lastIndexOf
+- ES7: includes
+
+`slice` 返回一个新的数组对象，这一对象是一个由 begin 和 end 决定的原数组的**浅拷贝**（包括 begin，不包括end）。原始数组不会被改变。
+英文释义：切；切片；割
+**注**：字符串 slice(beginIndex[, endIndex])方法，提取某个字符串的一部分，并返回一个新的字符串，且不会改动原字符串。
+```js
+/**
+ * @description: 
+ * @param begin
+ * @param end
+ * @return 一个新的数组对象
+ */
+array.slice(begin, end);
+
+let a= ['hello','world'];
+let b=a.slice(0,1); // ['hello']
+a[0]='改变原数组';
+console.log(a,b); // ['改变原数组','world'] ['hello']
+b[0]='改变拷贝的数组';
+console.log(a,b); // ['改变原数组','world'] ['改变拷贝的数组']
+
+let a = [{name:'OBKoro1'}];
+let b = a.slice();
+console.log(b,a); // [{"name":"OBKoro1"}]  [{"name":"OBKoro1"}]
+a[0].name = '改变原数组';
+console.log(b,a); // [{"name":"改变原数组"}] [{"name":"改变原数组"}]
+b[0].name = '改变拷贝数组', b[0].koro='改变拷贝数组'; //[{"name":"改变拷贝数组","koro":"改变拷贝数组"}] [{"name":"改变拷贝数组","koro":"改变拷贝数组"}]
+```
+`join` 把数组中的所有元素通过指定的分隔符进行分隔放入一个字符串，返回生成的字符串。
+**注**：split(英文释义：分裂，分离) String方法，使用指定的分隔符字符串将一个String对象分割成子字符串数组。
+```js
+let a = ['hello','world'];
+let str = a.join(); // 'hello,world'
+let str = a.join('+'); // 'hello+world'
+
+// join()/toString()方法在数组元素是数组的时候，会将里面的数组也调用join()/toString(),如果是对象的话，对象会被转为[object Object]字符串。
+let a = [['OBKoro1','23'],'test'];
+let str1 = a.join(); // "OBKoro1,23,test"
+let b = [{name:'OBKoro1',age:'23'},'test'];
+let str2 = b.join(); // "[object Object],test"
+// 对象转字符串推荐JSON.stringify(obj);
+```
+`toString` 可把数组转换为由逗号链接起来的字符串, 更推荐join
+`toLocaleString` 返回格式化对象后的字符串，该字符串格式因不同语言而不同
+```js
+const array1 = [1, 'a', new Date('21 Dec 1997 14:12:00 UTC')];
+const localeString = array1.toLocaleString('en', { timeZone: 'UTC' });
+
+console.log(localeString);
+// expected output: "1,a,12/21/1997, 2:12:00 PM",
+// This assumes "en" locale and UTC timezone - your results may vary
+```
+`concat` 合并两个或多个数组，返回一个新数组
+```js
+/**
+ * @param arrayX（必须）：该参数可以是具体的值，也可以是数组对象。可以是任意多个。
+ */
+var newArr = oldArray.concat(arrayX, arrayX, ......, arrayX)
+
+let a = [1, 2, 3];
+let b = [4, 5, 6];
+//连接两个数组
+let newVal=a.concat(b); // [1,2,3,4,5,6]
+// 连接三个数组
+let c = [7, 8, 9]
+let newVal2 = a.concat(b, c); // [1,2,3,4,5,6,7,8,9]
+// 添加元素
+let newVal3 = a.concat('添加元素',b, c,'再加一个'); 
+// [1,2,3,"添加元素",4,5,6,7,8,9,"再加一个"]
+// 合并嵌套数组  会浅拷贝嵌套数组
+let d = [1, 2];
+let f = [3, [4]];
+let newVal4 = d.concat(f); // [1,2,3,[4]]
+```
+**ES6 扩展运算符**， 更方便合并数组的方法
+```js
+let a = [1, 2, 3]
+let b = [1, ...a, 4, 4]  // [1, 1, 2, 3, 4, 4]
+```
+`indexOf` 返回在数组中可以找到一个给定元素的第一个索引，如果不存在，则返回-1。
+**注** 
+- 严格相等的搜索:数组的indexOf搜索跟字符串的indexOf不一样,数组的indexOf使用严格相等===搜索元素，即数组元素要完全匹配才能搜索成功。
+- indexOf()不能识别NaN
+**使用场景**
+- 数组去重：遍历，将值添加到新数组，用indexOf()判断值是否存在，已存在就不添加，达到去重效果。
+- 根据获取的数组下标执行操作，改变数组中的值等。
+- 判断是否存在，执行操作。
+```js
+/**
+ * @param searchElement (必须):被查找的元素
+ * @param fromIndex (可选):开始查找的位置(不能大于等于数组的长度，返回-1)，接受负值，默认值为0。
+ */
+array.indexOf(searchElement,fromIndex)
+
+let a = [NaN, '数据', 1]
+a.indexOf(NaN) // -1
+a.indexOf(1) // 2
+```
+`lastIndexOf` 返回指定元素,在数组中的最后一个的索引，如果不存在则返回 -1。（从数组后面往前查找）
+```js
+/**
+ * @param searchElement(必须): 被查找的元素
+ * @param fromIndex(可选): 从此位置开始逆向查找，默认值数组的长度-1，即查找整个数组。
+ * 关于fromIndex有三个规则:
+ * - 正值。如果该值大于或等于数组的长度，则整个数组会被查找。
+ * - 负值。将其视为从数组末尾向前的偏移。(比如-2，从数组最后第二个元素开始往前查找)
+ * - 负值。其绝对值大于数组长度，则方法返回 -1，即数组不会被查找。
+ */
+arr.lastIndexOf(searchElement,fromIndex)
+let a = [1,1,1,1,1,1]
+a.lastIndexOf(1,10) // 5
+a.lastIndexOf(1,-2) // 4
+```
+`includes` 查找数组是否包含某个元素 返回布尔
+是为了弥补indexOf方法的缺陷而出现的
+- indexOf方法不能识别NaN
+- indexOf方法检查是否包含某个值不够语义化，需要判断是否不等于-1，表达不够直观
+```js
+/**
+ * @param searchElement(必须):被查找的元素
+ * @param fromIndex(可选):默认值为0，参数表示搜索的起始位置，接受负值。正值超过数组长度，数组不会被搜索，返回false。负值绝对值超过长数组度，重置从0开始搜索。
+ */
+array.includes(searchElement,fromIndex=0)
+
+let a=['OB','Koro1',1,NaN];
+let b=a.includes(NaN); // true 识别NaN
+let b=a.includes('Koro1',100); // false 超过数组长度 不搜索
+let b=a.includes('Koro1',-3);  // true 从倒数第三个元素开始搜索 
+let b=a.includes('Koro1',-100);  // true 负值绝对值超过数组长度，搜索整个数组
+```
 
 
-### 遍历
-推荐for 性能最好
+## 遍历
+- ES5: forEach / every / some / filter / map / reduce / reduceRight 
+- ES6: find / findIndex / keys / values / entries
+**注**
+- 尽量不要在遍历的时候，修改后面要遍历的值
+- 尽量不要在遍历的时候修改数组的长度（删除/添加）
+**注**遍历推荐for 性能最好（while也一样）
+
+`forEach` 按升序为数组中含有效值的每一项执行一次回调函数。
 ```js
-//for
-for(let i=0;i<arr.length;i++){}
-//forEach
-arr.forEach((item,index)=>{})
-//map：对每个元素进行处理，返回一个全新的数组
-const newArr = arr.map((item,index)=>{
-  return item+1
-})
+/**
+ * @param function(必须): 数组中每个元素需要调用的函数。
+    // 回调函数的参数
+    1. currentValue(必须),数组当前元素的值
+    2. index(可选), 当前元素的索引值
+    3. arr(可选),数组对象本身
+  * @param thisValue(可选): 当执行回调函数时this绑定对象的值，默认值为undefined
+ */
+array.forEach(function(item, index, arr), thisValue)
 ```
-## 二维数组/矩阵
-### 创建
-不能用fill创建
-fill:如果入参类型是引用类型，那么填充的内容就是引用类型的
+**注**
+- 无法中途退出循环，只能用return退出本次回调，进行下一次回调。（因为return只会退出当前函数，即当前运行到的传入的回调函数，而不是指跳出forEach）
+- 它总是返回 undefined值,即使你return了一个值。
+**补充1**
+1. 对于空数组是不会执行回调函数的
+2. 对于已在迭代过程中删除的元素，或者空元素会跳过回调函数
+3. 遍历次数再第一次循环前就会确定，再添加到数组中的元素不会被遍历。
+4. 如果已经存在的值被改变，则传递给 callback 的值是遍历到他们那一刻的值。
+**补充2**
+- for循环是可以break,continue,return打断的
+- 注意return要写在函数体内，如果只有for循环，未被包裹到函数内，return会报错
 ```js
-const arr = new Array(2).fill([])
-arr[0][0] = 1
-console.log(arr)
-//[[1],[1]]
+let a = [1, 2, ,3]; // 最后第二个元素是空的，不会遍历(undefined、null会遍历)
+let obj = { name: 'OBKoro1' };
+let result = a.forEach(function (value, index, array) { 
+  a[3] = '改变元素';
+  a.push('添加到尾端，不会被遍历')
+  console.log(value, 'forEach传递的第一个参数'); // 分别打印 1 ,2 ,改变元素
+  console.log(this.name); // OBKoro1 打印三次 this绑定在obj对象上
+  // break; // break会报错
+  return value; // return只能结束本次回调 会执行下次回调
+  console.log('不会执行，因为return 会执行下一次循环回调')
+}, obj);
+console.log(result); // 即使return了一个值,也还是返回undefined
+// 回调函数也接受接头函数写法
 ```
-for循环
+
+`every` 检测数组所有元素是否都符合判断条件
 ```js
-for(let i=0;i<len;i++){
-  arr[i] = []
+/**
+ * @param 同forEach
+ * @return 
+ * 1. 如果数组中检测到有一个元素不满足，则整个表达式返回 false，且剩余的元素不会再进行检测。
+ * 2. 如果所有元素都满足条件，则返回 true。
+ */
+array.every(function(currentValue, index, arr), thisValue);
+
+let arr = [1, 2, 3] 
+function cb(value) {
+  return value > 2
 }
+arr.every(cb)  //false
 ```
-### 访问
-```js
-const outerLen = arr.length
-for(let i=0;i<outerLen;i++>){
-  const innerLen = arr[i].length
-  for(let j=0;j<innerLen;j++){
 
-  }
+`some` 数组中的是否有满足判断条件的元素
+```js
+/**
+ * @param 同forEach
+ * @return 
+ * 1. 如果有一个元素满足条件，则表达式返回true, 剩余的元素不会再执行检测。
+ * 2. 如果没有满足条件的元素，则返回false。
+ */
+array.some(function(currentValue, index, arr), thisValue)
+
+let arr = [1, 2, 3] 
+function cb(value) {
+  return value > 2
 }
+arr.every(cb)  //true
 ```
+
+`filter` 过滤原始数组，返回新数组。返回一个新数组, 其包含通过所提供函数实现的测试的所有元素。
+```js
+let new_array = arr.filter(function(currentValue, index, arr), thisArg);
+
+let arr = [1, 2, 3] 
+function cb(value) {
+  return value > 2
+}
+let result = arr.filter(cb) 
+console.log(result, arr)// [3]  [1, 2, 3]
+```
+
+`map` 对数组中的每个元素进行处理，返回新的数组
+```js
+let new_array = arr.map(function(currentValue, index, arr), thisArg);
+
+let arr = [1, 2, 3] 
+function cb(value) {
+  return value + 2
+}
+let result = arr.map(cb) 
+console.log(result, arr)// [3, 4, 5]  [1, 2, 3]
+```
+
+`reduce` reduce 为数组提供累加器，合并为一个值。
+**回调第一次执行时:**
+- 如果 initialValue 在调用 reduce 时被提供，那么第一个 total 将等于 initialValue，此时 currentValue 等于数组中的第一个值；
+- 如果 initialValue 未被提供，那么 total 等于数组中的第一个值，currentValue 等于数组中的第二个值。此时如果数组为空，那么将抛出 TypeError。
+- 如果数组仅有一个元素，并且没有提供 initialValue，或提供了 initialValue 但数组为空，那么回调不会被执行，数组的唯一值将被返回。
+```js
+/**
+ * @description: 对累加器和数组中的每个元素（从左到右）应用一个函数，最终合并为一个值。
+ * @param function(必须): 数组中每个元素需要调用的函数。
+ * // 回调函数的参数
+ * 1. accumulator (必须) 累计器，初始值, 或者上一次调用回调返回的值
+ * 2. currentValue(必须),数组当前元素的值
+ * 3. currentIndex (可选), 当前元素的索引值
+ * 4. array (可选),数组对象本身
+ * @param initialValue(可选): 指定第一次回调 的第一个参数。
+ */
+array.reduce(function(accumulator, currentValue, currentIndex, arr), initialValue;
+
+let maxCallback = ( acc, cur ) => Math.max( acc.x, cur.x );
+let maxCallback2 = ( max, cur ) => Math.max( max, cur );
+
+// reduce() 没有初始值
+[ { x: 2 }, { x: 22 }, { x: 42 } ].reduce( maxCallback ); // NaN
+[ { x: 2 }, { x: 22 }            ].reduce( maxCallback ); // 22
+[ { x: 2 }                       ].reduce( maxCallback ); // { x: 2 }
+[                                ].reduce( maxCallback ); // TypeError
+
+// 将二维数组转化为一维 将数组元素展开
+let flattened = [[0, 1], [2, 3], [4, 5]].reduce(
+  (a, b) => a.concat(b),
+  [1, 2]
+);  // [1, 2, 0, 1, 2, 3, 4, 5]
+```
+
+`reduceRight` 从右至左累加, 其他参考reduce方法。
+
+`find` 用于找出第一个符合条件的数组成员，并返回该成员，如果没有符合条件的成员，则返回undefined。
+`findIndex`返回第一个符合条件的数组成员的位置，如果所有成员都不符合条件，则返回-1。
+**注：**这两个方法都可以识别NaN,弥补了indexOf的不足。
+```js
+let new_array = arr.find(function(currentValue, index, arr), thisArg);
+let new_array = arr.findIndex(function(currentValue, index, arr), thisArg);
+
+// find
+let a = [1, 4, -5, 10].find((n) => n < 0); // 返回元素-5
+let b = [1, 4, -5, 10, NaN].find((n) => Object.is(NaN, n));  // 返回元素NaN
+// findIndex
+let a = [1, 4, -5, 10].findIndex((n) => n < 0); // 返回索引2
+let b = [1, 4, -5, 10, NaN].findIndex((n) => Object.is(NaN, n));  // 返回索引4
+```
+
+`keys()&values()&entries()` 遍历键名、遍历键值、遍历键名+键。三个方法都返回一个新的 **Array Iterator 对象**，对象根据方法不同包含不同的值。
+```js
+array.keys()
+array.values()
+array.entries()
+
+for (let index of ['a', 'b'].keys()) {
+  console.log(index);
+} //'0' '1'
+
+for (let elem of ['a', 'b'].values()) {
+  console.log(elem);
+} // 'a' 'b'
+
+for (let [index, elem] of ['a', 'b'].entries()) {
+  console.log(index, elem);
+} // '0' 'a'  '1' 'b'
+```
+**补充1** 在for..of中如果遍历中途要退出，可以使用break退出循环。
+**补充2** 如果不使用for...of循环，可以手动调用遍历器对象的next方法，进行遍历。
+```js
+var arr = ['a', 'b', 'c', 'd', 'e'];
+var iterator = arr.values();
+iterator.next();               // Object { value: "a", done: false }
+iterator.next().value;         // "b"
+iterator.next()["value"];      // "c"
+iterator.next();               // Object { value: "d", done: false }
+iterator.next();               // Object { value: "e", done: false }
+iterator.next();               // Object { value: undefined, done: true }
+iterator.next().value;         // undefined
+```
+**补充3** 索引迭代器会包含那些没有对应元素的索引
+```js
+var arr = ["a", , "c"];
+var sparseKeys = Object.keys(arr);
+var denseKeys = [...arr.keys()];
+console.log(sparseKeys); // ['0', '2']
+console.log(denseKeys);  // [0, 1, 2]
+```
+
 ### 增加元素
 - unshift: 头插入
 - push: 尾插入
