@@ -6,7 +6,7 @@ categories:
 tags :
   - dataStructure
 ---
-
+数组扩展了对象，提供了特殊的方法来处理有序的数据集合以及 length 属性。但从本质上讲，它仍然是一个对象。
 ## 创建
 **字面量**
 ```js
@@ -65,6 +65,9 @@ function isArrayLike(o) {
 - Array.prototype.slice.call(arrLike)
 - Array.from(arrLike)
 
+**补充 length** 
+`length` 属性是可写的。如果我们手动增加它，则不会发生任何有趣的事儿。但是如果我们减少它，数组就会被截断。该过程是不可逆的。
+**清空数组最简单的方法就是：arr.length = 0;**
 ## 方法
 改变原数组的值，不会改变原数组，以及数组的遍历方法
 ### 改变原数组的方法（9个）
@@ -346,6 +349,38 @@ let result = a.forEach(function (value, index, array) {
 console.log(result); // 即使return了一个值,也还是返回undefined
 // 回调函数也接受接头函数写法
 ```
+**补充3**
+`for...of` 不能获取当前元素的索引，只是获取元素值
+**补充4**
+`for...in` 遍历一个对象的除Symbol以外的可枚举属性，包括继承的可枚举属性。 因为数组也是对象，所以使用 for..in 也是可以的, 不推荐
+- 问题1 for..in 循环会遍历 所有属性，不仅仅是这些数字属性。比如“类数组”的对象，还可能遍历出非数字属性。
+- 问题2 相较于其他方法更慢
+```js
+
+var triangle = {a: 1, b: 2, c: 3};
+
+function ColoredTriangle() {
+  this.color = 'red';
+}
+
+ColoredTriangle.prototype = triangle;
+
+var obj = new ColoredTriangle();
+
+for (var prop in obj) {
+  console.log(`all: obj.${prop} = ${obj[prop]}`)
+  if (obj.hasOwnProperty(prop)) {
+    console.log(`own: obj.${prop} = ${obj[prop]}`);
+  }
+}
+
+// all: obj.color = red
+// own: obj.color = red
+// all: obj.a = 1
+// all: obj.b = 2
+// all: obj.c = 3
+```
+
 
 `every` 检测数组所有元素是否都符合判断条件
 ```js
@@ -505,6 +540,46 @@ console.log(denseKeys);  // [0, 1, 2]
 - shift: 头删除
 - pop: 尾删除
 - splice: 删除任意位置元素
+`搜索元素`
+- indexOf / lastIndexOf
+- includes
+- find / findIndex
+`转换数组`
+- map(func)
+- sort(func)
+- reverse(func)
+- split/join
+- reduce/reduceRight(func, initial)
+## 数组静态方法
+### Array.isArray
+用于确定传递的值是否是一个 Array, 返回布尔类型。
+- 数组是基于对象的，不构成单独的语言类型。所以 typeof 不能帮助从数组中区分出普通对象
+```js
+typeof {} // object
+typeof [] // object
+```
+- 当检测Array实例时, Array.isArray 优于 instanceof,因为Array.isArray能检测iframes。
+### Array.from 
+对一个类似数组或可迭代对象创建一个新的，**浅拷贝**的数组实例。
+```js
+/**
+ * @param arrayLike 想要转换成数组的伪数组对象或可迭代对象。
+ * @param mapFn 可选 如果指定了该参数，新数组中的每个元素会执行该回调函数。
+ * @param thisArg 可选 执行回调函数 mapFn 时 this 对象。
+ */
+Array.from(arrayLike[, mapFn[, thisArg]])
+```
+**补充** 
+在 ES2015 中， Class 语法允许我们为内置类型（比如 Array）和自定义类新建子类（比如叫 SubArray）。这些子类也会继承父类的静态方法，比如 SubArray.from()，调用该方法后会返回子类 SubArray 的一个实例，而不是 Array 的实例。
+### Array.of
+创建一个具有可变数量参数的新数组实例，而不考虑参数的数量或类型。
+```js
+Array.of(7);       // [7]
+Array.of(1, 2, 3); // [1, 2, 3]
+
+Array(7);          // [ , , , , , , ]
+Array(1, 2, 3);    // [1, 2, 3]
+```
 
 
 两数求和问题：
