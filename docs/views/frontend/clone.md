@@ -209,10 +209,10 @@ function cloneLoop(data){
   return root
 }
 ```
-(深拷贝的终极探索)[https://segmentfault.com/a/1190000016672263]
-(如何写出一个惊艳面试官的深拷贝?)[https://juejin.cn/post/6844903929705136141]
-(浅拷贝与深拷贝)[https://juejin.cn/post/6844904197595332622]
-(内功修炼之lodash—— clone&cloneDeep(一定有你遗漏的js基础知识))[https://juejin.cn/post/6844903999972474887#comment]
-(lodash源码分析——deepclone)[https://zhuanlan.zhihu.com/p/41699218]
-(聊一聊JS中的循环引用及问题)[https://zhuanlan.zhihu.com/p/102029144]
+[深拷贝的终极探索](https://segmentfault.com/a/1190000016672263)
+[如何写出一个惊艳面试官的深拷贝?](https://juejin.cn/post/6844903929705136141)
+[浅拷贝与深拷贝][https://juejin.cn/post/6844904197595332622)
+[内功修炼之lodash—— clone&cloneDeep(一定有你遗漏的js基础知识)](https://juejin.cn/post/6844903999972474887#comment)
+[lodash源码分析——deepclone](https://zhuanlan.zhihu.com/p/41699218)
+[聊一聊JS中的循环引用及问题](https://zhuanlan.zhihu.com/p/102029144)
 https://blog.csdn.net/qq_23853743/article/details/107622223
