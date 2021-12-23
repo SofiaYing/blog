@@ -80,3 +80,10 @@ let clone = {...user}
 
 (你真的了解垃圾回收机制吗)[https://juejin.cn/post/6981588276356317214]
 (JavaScript中的垃圾回收和内存泄漏)[https://juejin.cn/post/6844903833387155464]
+
+Object.create
+Object.keys
+Object.values
+Object.prptotype.hasOwnPropty?
+Object.assign
+Ojbect.propotyNames?

@@ -116,7 +116,7 @@ function deepClone(source){
   }
   for (let key in source) {
     if (source.hasOwnProperty(key)) {
-      copy[key] = sourcep[key]
+      copy[key] = source[key]
     }
   }
   return copy
