@@ -24,3 +24,6 @@ script end
 promise
 promise
 setTimeout
+
+(Promise与微任务，你真的懂吗？)[https://zhuanlan.zhihu.com/p/449183802?]
+(Js 的事件循环(Event Loop)机制以及实例讲解)[https://juejin.cn/post/6844903621872582669]
