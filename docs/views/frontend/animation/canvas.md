@@ -1,9 +1,18 @@
+---
+title: canvas
+date: 2020-12-23
+categories:
+  - frond-end
+tags :
+  - canvas
+---
+
 由于每个圆都不一样，所以都需要绘制相应的缓存圆。示例中的离屏渲染主要是在动画时，每次重绘不需要再重写绘制这个圆，只要获取cache中的，drawImage后改变位置即可
 
 https://juejin.cn/post/6844903989197144078#heading-4
 链接中的离屏渲染，雪花都是一样大小，new 一个cacheSnow就可以了
 
-Canvas 的默认大小为300像素×150像素（宽×高，像素的单位是px）。可以通过JavaScript动态创建图像（ creates graphics on the fly。<canvas>元素可以像任何一个普通的图像一样（有margin，border，background等等属性）被设计。然而，这些样式不会影响在canvas中的实际图像。当开始时没有为canvas规定样式规则，其将会完全**透明**。
+Canvas 的默认大小为300像素×150像素（宽×高，像素的单位是px）。可以通过JavaScript动态创建图像（ creates graphics on the fly。`<canvas>`元素可以像任何一个普通的图像一样（有margin，border，background等等属性）被设计。然而，这些样式不会影响在canvas中的实际图像。当开始时没有为canvas规定样式规则，其将会完全**透明**。
 
 canvas 画布自适应方法
 ```js
@@ -36,9 +45,10 @@ canvas save & restore
 
 [Canvas中的save方法和restore方法](https://www.cnblogs.com/fangsmile/p/9530226.html)
 
-[[源码阅读]基于Canvas+贝塞尔曲线算法的平滑手写板](https://segmentfault.com/a/1190000019514679)
+[源码阅读 基于Canvas+贝塞尔曲线算法的平滑手写板](https://segmentfault.com/a/1190000019514679)
 
 [Vue 前端验证码 - canvas Rem布局自适应 - 跨域问题](cnblogs.com/Jlay/p/vue_canvas.html)
+[1](https://segmentfault.com/a/1190000011478657)
 
 版本问题
 rc.1版本
@@ -65,4 +75,4 @@ var transformLay = $("#swiper_container").css("transform");
 var Lay = transformLay.replace(")", "").split(',');
 $("#swiper_container").css({ "transform": "", "left": parseInt(Lay[4]), "top": parseInt(Lay[5]) });
 
-https://segmentfault.com/a/1190000011478657
+
