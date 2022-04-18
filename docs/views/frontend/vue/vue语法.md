@@ -1,4 +1,4 @@
-v-model
+## v-model
 ```js
 // 在 JS 中修改 x 的值，input 输入框里也会随之改变。同样地，在页面中的 input 输入框内手动输入值，变量 x 的值也会随之改变。
 <input v-model="inputValue"/>
@@ -35,4 +35,9 @@ props:{
     value:String
   }
 }
+```
+## .sync
+```html
+<!-- parent -->
+<div></div>
 ```

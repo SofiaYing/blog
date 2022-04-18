@@ -57,11 +57,11 @@
   </div>
 </div>
 ```
-!(滚动条挤压布局)[./images/滚动条挤压布局.png]
+!(滚动条挤压布局)[./images/scrollBarExtrusion.png]
 3. 设置圆角，有部分线条不显示问题
 - 第一种情况是内部元素有背景色但是未设置圆角，设置即可
 - 第二种是原生滚动条造成，vue项目可以使用element-ui的`el-scroll`，如果使用原生滚动条可以增加外部容器，将圆角添加到外部容器上，并增加`overflow:hidden`
-!(圆角不全效果图)[./images/圆角不全效果图.png]
+!(圆角不全效果图)[./images/incompleteFillet.png]
 4. element-ui form 验证多层嵌套数据
 `要点`
 1. 注意el-form-item的prop要传string 

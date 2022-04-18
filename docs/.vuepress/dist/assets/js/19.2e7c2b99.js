@@ -1,0 +1,1 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[19],{558:function(t,e,n){"use strict";n.r(e);var s=n(4),l=Object(s.a)({},(function(){var t=this.$createElement,e=this._self._c||t;return e("ContentSlotsDistributor",{attrs:{"slot-key":this.$parent.slotKey}},[e("p",[this._v("建议新建一个变量时，都以const写起，必要时再改成let")])])}),[],!1,null,null,null);e.default=l.exports}}]);
