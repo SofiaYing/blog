@@ -12,6 +12,10 @@ tags :
 ```js
 const arr = [] 
 const arr = [3, 8, 11]
+// 二维数组
+for(let i =0;i<arr.length;i++) {
+  arr[i] = []
+}
 ```
 **构造器**
 ```js
@@ -20,10 +24,8 @@ const arr = new Array() // []
 const arr = new Array(3) // 长度为3的数组 [ , , ]
 const arr = new Array(3).fill(0) // [0, 0, 0]
 const arr = new Array(3, 8, 11) // [3, 8, 11]
-// 二维数组
-const arr = new Array(2).fill([])
-arr[0][0] = 1
 ```
+
 **ES6 Array.of()** 返回由所有参数值组成的数组
 ```js
 const arr = Array.of(3) // [3]
@@ -326,11 +328,13 @@ array.forEach(function(item, index, arr), thisValue)
 **注**
 - 无法中途退出循环，只能用return退出本次回调，进行下一次回调。（因为return只会退出当前函数，即当前运行到的传入的回调函数，而不是指跳出forEach）
 - 它总是返回 undefined值,即使你return了一个值。
+
 **补充1**
 1. 对于空数组是不会执行回调函数的
 2. 对于已在迭代过程中删除的元素，或者空元素会跳过回调函数
 3. 遍历次数再第一次循环前就会确定，再添加到数组中的元素不会被遍历。
 4. 如果已经存在的值被改变，则传递给 callback 的值是遍历到他们那一刻的值。
+
 **补充2**
 - for循环是可以break,continue,return打断的
 - 注意return要写在函数体内，如果只有for循环，未被包裹到函数内，return会报错
@@ -349,8 +353,10 @@ let result = a.forEach(function (value, index, array) {
 console.log(result); // 即使return了一个值,也还是返回undefined
 // 回调函数也接受接头函数写法
 ```
+
 **补充3**
 `for...of` 不能获取当前元素的索引，只是获取元素值
+
 **补充4**
 `for...in` 遍历一个对象的除Symbol以外的可枚举属性，包括继承的可枚举属性。 因为数组也是对象，所以使用 for..in 也是可以的, 不推荐
 - 问题1 for..in 循环会遍历 所有属性，不仅仅是这些数字属性。比如“类数组”的对象，还可能遍历出非数字属性。
