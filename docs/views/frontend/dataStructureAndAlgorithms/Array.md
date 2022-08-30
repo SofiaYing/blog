@@ -57,12 +57,9 @@ for (let i = 0; i < arr.length; i++) {
   }
 }
 ```
-
-
-
-
-
-两数求和问题：
+## 真题
+** 记忆点：几乎所有的求和问题，都可以转化为求差问题 **
+1. 两数求和问题：
 真题描述： 给定一个整数数组 nums 和一个目标值 target，请你在该数组中找出和为目标值的那 两个 整数，并返回他们的数组下标。
 你可以假设每种输入只会对应一个答案。但是，你不能重复利用这个数组中同样的元素。
 
@@ -80,7 +77,6 @@ var sum = function(arr,target){
   }
 }
 ```
-** 记忆点：几乎所有的求和问题，都可以转化为求差问题 **
 
 可以在遍历数组的过程中，增加一个 Map 来记录已经遍历过的数字及其对应的索引值。然后每遍历到一个新数字的时候，都回到 Map 里去查询 targetNum 与该数的差值是否已经在前面的数字中出现过了。若出现过，那么答案已然显现
 
@@ -187,11 +183,120 @@ function sum(arr,target){
   }
 }
 ```
-
+## 双指针
 什么时候你需要联想到对撞指针？
-这里我给大家两个关键字——“有序”和“数组”。
+这里我给大家两个关键字——**“有序”**和 **“数组”**。
 没错，见到这两个关键字，立刻把双指针法调度进你的大脑内存。普通双指针走不通，立刻想对撞指针！
 
 即便数组题目中并没有直接给出“有序”这个关键条件，我们在发觉普通思路走不下去的时候，也应该及时地尝试手动对其进行排序试试看有没有新的切入点——没有条件，创造条件也要上。
 
 ![【干货】js 数组详细操作方法及解析合集](https://juejin.cn/post/6844903614918459406)
+
+## 二分查找
+二分查找只有一个思想，那就是：逐步缩小搜索区间。
+不在于我们设置的区间是「左闭右闭」还是「左开右闭」。而在于 认真看题、仔细分析题意，根据题目的条件和要求思考如何缩减区间，清楚地知道每一轮在什么样的情况下，搜索的范围是什么，进而设置左右边界。
+在有序数组中查找，可以使用「二分查找」。
+写成 while(left < right) ，退出循环的时候有 left == right 成立，好处是：不用判断应该返回 left 还是 right；
+区间 [left..right] 划分只有以下两种情况：
+分成 [left..mid] 和 [mid + 1..right]，分别对应 right = mid 和 left = mid + 1；
+分成 [left..mid - 1] 和 [mid..right]，分别对应 right = mid - 1 和 left = mid，这种情况下。需要将 int mid = (left + right) / 2 改成 int mid = (left + right + 1) / 2，否则会出现死循环，这一点不用记，出现死循环的时候，把 left 和 right 的值打印出来看一下就很清楚了；
+退出循环 left == right，如果可以确定区间 [left..right] 一定有解，直接返回 left 就可以，否则还需要对 left 这个位置单独做一次判断；
+始终保持不变的是：在区间 [left..right] 里查找目标元素。
+
+*题目1*
+给定一个排序数组和一个目标值，在数组中找到目标值，并返回其索引。如果目标值不存在于数组中，返回它将会被按顺序插入的位置。
+请必须使用时间复杂度为 O(log n) 的算法。
+**死循环1**
+```js
+function searchInsert(nums, target) {
+  const l = nums.length
+  let left = 0;
+  let right = l; // 有可能返回大于数组长度的索引，如nums=[1, 2]，target=3
+  while (left <= right) { // 死循环：由于right = mid，left、mid、right可能发生重合，会造成死循环
+    let mid = Math.floor((left + right) / 2) // (left + right) >>> 1; 位运算，无符号右移一位
+    if (target <= nums[mid]) { // 因为1：运算符为<=
+      right = mid // 所以1：right不能是mid-1
+    } else if (target > nums[mid]) {
+      left = mid + 1
+    } 
+  }
+  return left
+}
+```
+**正确写法1**
+```js
+function searchInsert(nums, target) {
+  const l = nums.length
+  let left = 0;
+  let right = l; // 有可能返回大于数组长度的索引，如nums=[1, 2]，target=3
+  while (left < right) { // 死循环：由于right = mid，left、mid、right可能发生重合，会造成死循环
+    let mid = Math.floor((left + right) / 2) // (left + right) >>> 1; 位运算，无符号右移一位
+    if (target <= nums[mid]) { // 因为1：运算符为<=
+      right = mid // 所以1：right不能是mid-1
+    } else if (target > nums[mid]) {
+      left = mid + 1
+    } 
+  }
+  return left
+}
+```
+**死循环2**
+```js
+function searchInsert(nums, target) {
+  const l = nums.length
+  let left = 0;
+  let right = l; // 有可能返回大于数组长度的索引，如nums=[1, 2]，target=3
+  while (left <= right) { // 死循环：nums=[1,3,5,6],target=7,可能出现left=mid=right=4
+    let mid = Math.floor((left + right) / 2)
+    if (target === nums[mid]) {
+      return mid
+    } else if (target < nums[mid]) { 
+      right = mid - 1
+    } else if (target > nums[mid]) {
+      left = mid + 1
+    } 
+  }
+  return left
+}
+```
+**无法涵盖所有情况**
+```js
+function searchInsert(nums, target) {
+  const l = nums.length
+  let left = 0;
+  let right = l; // [1,3] 2 或 right=l-1 [1,3,5,6] 2
+  while (left < right) { //left和right都不等于mid，可能出现改变后，left=mid=right,还没有对比过的情况
+    let mid = Math.floor((left + right) / 2) 
+    if (target === nums[mid]) {
+      return mid
+    } else if (target < nums[mid]) { 
+      right = mid - 1 
+    } else if (target > nums[mid]) {
+      left = mid + 1
+    } 
+  }
+  return left
+}
+```
+**正确写法2**
+```js
+function searchInsert(nums, target) {
+  const l = nums.length
+  let left = 0;
+  let right = l - 1; // 因为left=mid+1,可以遍历到l的位置
+  while (left <= right) { 
+    let mid = Math.floor((left + right) / 2)
+    if (target === nums[mid]) {
+      return mid
+    } else if (target < nums[mid]) { 
+      right = mid - 1
+    } else if (target > nums[mid]) {
+      left = mid + 1
+    } 
+  }
+  return left
+}
+```
+
+![二分查找](https://leetcode.cn/problems/search-insert-position/solution/te-bie-hao-yong-de-er-fen-cha-fa-fa-mo-ban-python-/)
+
