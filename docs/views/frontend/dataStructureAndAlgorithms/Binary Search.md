@@ -1,12 +1,16 @@
 ---
-title: binarySearch
+title: Binary Search
 date: 2022-08-29
 categories:
   - frond-end
 tags :
   - algorithms
 ---
-## 题型1. 获取target
+### 时间复杂度
+1*2*2*...(x个2) >= n(长度)
+2的x次方 <= n
+x为 log2 n
+### 题型1. 获取target
 **704**
 给定一个 n 个元素有序的（升序）整型数组 nums 和一个目标值 target  ，写一个函数搜索 nums 中的 target，如果目标值存在返回下标，否则返回 -1。
 
@@ -217,6 +221,26 @@ while (left < right) {
   }
 }
 return left
+```
+### 提醒4 第一个>target的位置
+**744 寻找比目标字母大的最小字母**
+给你一个排序后的字符列表 letters ，列表中只包含小写英文字母。另给出一个目标字母 target，请你寻找在这一有序列表里比目标字母大的最小字母。
+在比较时，字母是依序循环出现的。举个例子：如果目标字母 target = 'z' 并且字符列表为 letters = ['a', 'b']，则答案返回 'a'
+```js
+var nextGreatestLetter = function (letters, target) {
+  const l = letters.length
+  let left = 0
+  let right = l
+  while (left < right) {
+    let mid = left + Math.floor((right - left) / 2)
+    if (letters[mid] > target) { // mid > target 的有可能答案
+      right = mid // 不能用向上取整
+    } else { // mid <= target 的一定不是答案
+      left = mid + 1
+    }
+  }
+  return left === l ? letters[0] : letters[left]
+};
 ```
 
 
