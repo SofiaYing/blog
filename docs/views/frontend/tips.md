@@ -251,3 +251,7 @@ DeviceMotionEvent.requestPermission().then(function (state) {
 [Navigator.sendBeacon()](https://developer.mozilla.org/zh-CN/docs/Web/API/Navigator/sendBeacon)
 [Beacon API is broken](https://volument.com/blog/sendbeacon-is-broken#comments)
 - ajax
+
+31. 微信分享常见问题
+- 设置缩略图、描述失败（无报错）：在微信内打开页面，页面未加载完成时，由于微信初始化设置未完成，分享时可能会出现设置缩略图、描述失败情况
+- 部分手机在微信内无法打开http协议的地址
