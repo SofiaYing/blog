@@ -6,7 +6,7 @@ categories:
 tags :
   - base
 ---
-### Scoping
+# Scoping
 C系语言有块级作用域(block-level scope),当进入到一个块时，就像if语句，在这个块级作用域中会声明新的变量，这些变量不会影响到外部作用域。
 JavaScript是函数级作用域(function-level scope)。只有函数才会创建新的作用域
 作用域（Scope）即代码执行过程中的变量、函数或者对象的可访问区域，作用域决定了变量或者其他资源的可见性；计算机安全中一条基本原则即是用户只应该访问他们需要的资源，而作用域就是在编程中遵循该原则来保证代码的安全性。除此之外，作用域还能够帮助我们提升代码性能、追踪错误并且修复它们。JavaScript 中的作用域主要分为全局作用域（Global Scope）与局部作用域（Local Scope）两大类，在 ES5 中定义在函数内的变量即是属于某个局部作用域，而定义在函数外的变量即是属于全局作用域。
@@ -44,7 +44,7 @@ dummy2()
 //dynamic scope: 5 10
 //lexical scope: x is not defined
 ```
-### Context
+# Context
 作用域（Scope）与上下文（Context）常常被用来描述相同的概念，不过上下文更多的关注于代码中 this 的使用，而作用域则与变量的可见性相关；而 JavaScript 规范中的执行上下文（Execution Context）其实描述的是变量的作用域。众所周知，JavaScript 是单线程语言，同时刻仅有单任务在执行，而其他任务则会被压入执行上下文队列中；每次函数调用时都会创建出新的上下文，并将其添加到执行上下文队列中。
 每个执行上下文又会分为内存创建（Creation Phase）与代码执行（Code Execution Phase）两个步骤，
 1. 创建
@@ -84,7 +84,7 @@ new function(){ /* code */ }
 new function(){ /* code */ }() // 只有传递参数时，才需要最后那个圆括号
 ```
 
-### Hoisting
+# Hoisting
 JavaScript 中，所有绑定的声明会在控制流到达它们出现的作用域时被初始化；这里的作用域其实就是所谓的执行上下文（Execution Context），每个执行上下文分为内存分配（Memory Creation Phase）与执行（Execution）这两个阶段。在执行上下文的内存分配阶段会进行变量创建，即开始进入了变量的生命周期；变量的生命周期包含了声明（Declaration phase）、初始化（Initialization phase）与赋值（Assignment phase）过程这三个过程。
 
 传统的 var 关键字声明的变量允许在声明之前使用，此时该变量被赋值为 undefined；而函数作用域中声明的函数同样可以在声明前使用，其函数体也被提升到了头部。这种特性表现也就是所谓的提升（Hoisting）；虽然在 ES6 中以 let 与 const 关键字声明的变量同样会在作用域头部被初始化，不过这些变量仅允许在实际声明之后使用。在作用域头部与变量实际声明处之间的区域就称为所谓的暂时死域（Temporal Dead Zone），TDZ 能够避免传统的提升引发的潜在问题。另一方面，由于 ES6 引入了块级作用域，在块级作用域中声明的函数会被提升到该作用域头部，即允许在实际声明前使用；而在部分实现中该函数同时被提升到了所处函数作用域的头部，不过此时被赋值为 undefined。
@@ -179,7 +179,9 @@ console.log(foo) //function
 - var 的「创建」和「初始化」都被提升了。
 - function 的「创建」「初始化」和「赋值」都被提升了。
 
-
+There are two main differences of var compared to let/const:
+1. var variables have no block scope, their visibility is scoped to current function, or global, if declared outside function.
+2. var declarations are processed at function start (script start for globals).
 ### this
 在函数执行时，this 总是指向调用该函数的对象。要判断 this 的指向，其实就是判断 this 所在的函数属于谁。
 
