@@ -1,12 +1,76 @@
 ---
-title: 作用域
-date: 2020-2-21
+title: Execution Context and Scope
+date: 2023-6-25
 categories:
   - frond-end
 tags :
   - base
 ---
-# Scoping
+- **Engine引擎** 负责JavaScript程序的编译及执行过程。（compilation and execution phase）
+  
+  The Engine consists of two main components:
+  * Memory Heap — this is where the memory allocation happens
+  * Call Stack — this is where your stack frames are as your code executes
+  
+  we have the Engine but there is actually a lot more. We have those things called Web APIs which are provided by browsers, like the DOM, AJAX, setTimeout and much more.
+  And then, we have the so popular event loop and the callback queue.
+- **Compiler编译器** 引擎的好朋友之一，负责语法分析（Parsing,生成抽象语法树AST Abstract Syntax Tree）及代码生成(Code Generation)等脏活累活。
+- **Scope作用域** 引擎的另一位好朋友，负责收集并维护由所有声明的标识符（变量 varibale）组成的一系列查询(variable lookups)，并实施一套非常严格的规则，确定当前执行的代码对这些标识符的访问权限。
+Scope in JavaScript refers to the accessibility /ək,sesə'biləti/（可访问性） or visibility of variables. That is, which parts of a program have access/ˈækses/ to the variable or where the variable is visible.
+> <font color= #000>access</font>  *the right to enter a place, use something, see someone etc*
+> <font color= #000>perform</font> *to do something, especially something difficult or useful*
+
+比起需要三个步骤的传统编译语言（Tokenizing/Lexing 分词/词法分析；Parsing 解析/语法分析；Code Generation 代码生成），JavaScript引擎要复杂的多，大部分情况下编译发生在代码执行前的几微秒时间内，在所要讨论的作用域背后，JavaScript引擎用尽了各种办法来保证性能最佳。
+
+## Execution Context 执行上下文
+Simply put, an execution context is an abstract concept of an environment where the Javascript code is evaluated and executed. Whenever any code is run in JavaScript, it’s run inside an execution context.
+
+ES3
+- scope: 作用域，也常常被叫做作用域链（Scope Chain）
+- variable object：变量对象，用于存储变量的对象
+- this value：this值
+
+ES5
+- lexical environment: 词法环境，获取变量时使用
+- variable enviroment: 变量环境，声明变量时使用
+- this value
+
+ES2018 （this值被归入lexical environment）
+- lexical environment：词法环境，获取变量或this值时使用
+- variable environment
+- code evaluation state
+- Function
+- ScriptOrMoudle
+- Realm
+- Generator
+
+### Typeof of Execution Context 执行上下文类型
+JavaScript的可执行代码（executable code）只有三种：全局代码、函数代码、eval代码
+- Global Execution Context
+- Functional Execution Context
+- Eval Function Execution Context
+
+### Execution Context Stack / Call Stack 调用栈
+
+作用域（Scope）与上下文（Context）常常被用来描述相同的概念，不过上下文更多的关注于代码中 this 的使用，而作用域则与变量的可见性相关；而 JavaScript 规范中的执行上下文（Execution Context）其实描述的是变量的作用域。众所周知，JavaScript 是单线程语言，同时刻仅有单任务在执行，而其他任务则会被压入执行上下文队列中；每次函数调用时都会创建出新的上下文，并将其添加到执行上下文队列中。
+每个执行上下文又会分为内存创建（Creation Phase）与代码执行（Code Execution Phase）两个步骤，
+1. 创建
+- 会进行变量对象的创建（Variable Object）、作用域链的创建以及设置当前上下文中的 this 对象。所谓的 Variable Object ，又称为 Activation Object，包含了当前执行上下文中的所有变量、函数以及具体分支中的定义。当某个函数被执行时，解释器会先扫描所有的函数参数、变量以及其他声明。
+- 在 Variable Object 创建之后，解释器会继续创建作用域链（Scope Chain）；作用域链往往指向其副作用域，往往被用于解析变量。当需要解析某个具体的变量时，JavaScript 解释器会在作用域链上递归查找，直到找到合适的变量或者任何其他需要的资源。作用域链可以被认为是包含了其自身 Variable Object 引用以及所有的父 Variable Object 引用的对象：
+```js
+//执行上下文可以表述为如下抽象对象
+executionContextObject = {
+    'scopeChain': {}, // contains its own variableObject and other variableObject of the parent execution contexts
+    'variableObject': {}, // contains function arguments, inner variable and function declarations
+    'this': valueOfThis
+}
+```
+2. 代码执行
+
+
+## Scope
+作用域：程序源代码中定义变量的区域，规定了如何查找变量，也就是确定当前执行代码对变量的访问权限。
+
 C系语言有块级作用域(block-level scope),当进入到一个块时，就像if语句，在这个块级作用域中会声明新的变量，这些变量不会影响到外部作用域。
 JavaScript是函数级作用域(function-level scope)。只有函数才会创建新的作用域
 作用域（Scope）即代码执行过程中的变量、函数或者对象的可访问区域，作用域决定了变量或者其他资源的可见性；计算机安全中一条基本原则即是用户只应该访问他们需要的资源，而作用域就是在编程中遵循该原则来保证代码的安全性。除此之外，作用域还能够帮助我们提升代码性能、追踪错误并且修复它们。JavaScript 中的作用域主要分为全局作用域（Global Scope）与局部作用域（Local Scope）两大类，在 ES5 中定义在函数内的变量即是属于某个局部作用域，而定义在函数外的变量即是属于全局作用域。
@@ -44,21 +108,30 @@ dummy2()
 //dynamic scope: 5 10
 //lexical scope: x is not defined
 ```
-# Context
-作用域（Scope）与上下文（Context）常常被用来描述相同的概念，不过上下文更多的关注于代码中 this 的使用，而作用域则与变量的可见性相关；而 JavaScript 规范中的执行上下文（Execution Context）其实描述的是变量的作用域。众所周知，JavaScript 是单线程语言，同时刻仅有单任务在执行，而其他任务则会被压入执行上下文队列中；每次函数调用时都会创建出新的上下文，并将其添加到执行上下文队列中。
-每个执行上下文又会分为内存创建（Creation Phase）与代码执行（Code Execution Phase）两个步骤，
-1. 创建
-- 会进行变量对象的创建（Variable Object）、作用域链的创建以及设置当前上下文中的 this 对象。所谓的 Variable Object ，又称为 Activation Object，包含了当前执行上下文中的所有变量、函数以及具体分支中的定义。当某个函数被执行时，解释器会先扫描所有的函数参数、变量以及其他声明。
-- 在 Variable Object 创建之后，解释器会继续创建作用域链（Scope Chain）；作用域链往往指向其副作用域，往往被用于解析变量。当需要解析某个具体的变量时，JavaScript 解释器会在作用域链上递归查找，直到找到合适的变量或者任何其他需要的资源。作用域链可以被认为是包含了其自身 Variable Object 引用以及所有的父 Variable Object 引用的对象：
+
+
+
+
+
+
+
+### Lexical Scoping 
+词法作用域/静态作用域：函数的作用域在函数定义的时候就决定了。
+动态作用域：函数的作用域是在函数调用的时候才决定的。
 ```js
-//执行上下文可以表述为如下抽象对象
-executionContextObject = {
-    'scopeChain': {}, // contains its own variableObject and other variableObject of the parent execution contexts
-    'variableObject': {}, // contains function arguments, inner variable and function declarations
-    'this': valueOfThis
+var value = 1
+function foo() {
+  console.log(value)
 }
+function bar() {
+  var value = 2
+  foo()
+}
+bar()
+// Lexical Scoping 输出1
+// Dynamic Scope 输出2
+
 ```
-2. 代码执行
 
 ### IIFE
 立即执行函数IIFE Imdiately Invoked Function Expression
@@ -314,8 +387,15 @@ function before(func,n){
 }
 ```
 
+# English
+**compilation:** Code compilation is a set of steps that process the text of your code and turn it into a list of instructions the computer can understand. Typically, the whole source code is transformed at once, and those resulting instructions are saved as output (usually in a file) that can later be executed.
 
+**Interpretation** performs a similar task to compilation, in that it transforms your program into machine-understandable instructions. But the processing model is different. Unlike a program being compiled all at once, with interpretation the source code is transformed line by line; each line or statement is executed before immediately proceeding to processing the next line of the source code.
+- porform *to do something, especially something difficult or useful*
 
+编译和解释的过程上的区别：编译是将源程序翻译成可执行的目标代码，翻译与执行是分开的；而解释是对源程序的翻译与执行一次性完成，不生成可存储的目标代码。
+
+编译和解释结果上的区别：编译的话会把输入的源程序翻译生成为目标代码，并存下来（无论是存在内存中还是磁盘上），后续执行可以复用；解释的话则是把源程序中的指令逐条解释，不生成也不存下目标代码，后续执行没有多少可复用的信息。
 
 
 (变量作用域与提升)[https://juejin.cn/post/6844903490989342728]
@@ -323,3 +403,7 @@ function before(func,n){
 (JavaScript开发者应懂的33个概念)[https://github.com/leonardomso/33-js-concepts]
 (闭包详解一)[https://juejin.cn/post/6844903612879994887]
 (闭包详解二：JavaScript中的高阶函数)[https://juejin.cn/post/6844903616885555214]
+()[https://medium.com/sessionstack-blog/how-does-javascript-actually-work-part-1-b0bacc073cf]
+[https://medium.com/sessionstack-blog/how-does-javascript-actually-work-part-1-b0bacc073cf]
+[https://blog.bitsrc.io/understanding-execution-context-and-execution-stack-in-javascript-1c9ea8642dd0]
+(JS的执行上下文和作用域到底有什么区别？)[https://www.zhihu.com/question/482318118]

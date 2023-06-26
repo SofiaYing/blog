@@ -56,6 +56,8 @@ categories:
 
 > 测试
 
+<font color= #871F78>我是紫色</font>
+
 ## Use
 
 **Build**

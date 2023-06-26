@@ -131,3 +131,5 @@ attribute 大小写不敏感
 box-sizing
 - content-box (default) 所设置的 width 与 height 只会应用到这个元素的内容区
 - border-box 设置的边框和内边距的值是包含在width内的(不包含margin)
+
+AJAX /ˈeˌdʒæks/
