@@ -1,98 +1,38 @@
 ---
-title: Scope
-date: 2023-6-25
+title: Hoist
+date: 2023-6-29
 categories:
   - frond-end
 tags :
   - base
 ---
-# Scope
-作用域：程序源代码中定义变量的区域，规定了如何查找变量，也就是确定当前执行代码对变量的访问权限。
 
-C系语言有块级作用域(block-level scope),当进入到一个块时，就像if语句，在这个块级作用域中会声明新的变量，这些变量不会影响到外部作用域。
-JavaScript是函数级作用域(function-level scope)。只有函数才会创建新的作用域
-作用域（Scope）即代码执行过程中的变量、函数或者对象的可访问区域，作用域决定了变量或者其他资源的可见性；计算机安全中一条基本原则即是用户只应该访问他们需要的资源，而作用域就是在编程中遵循该原则来保证代码的安全性。除此之外，作用域还能够帮助我们提升代码性能、追踪错误并且修复它们。JavaScript 中的作用域主要分为全局作用域（Global Scope）与局部作用域（Local Scope）两大类，在 ES5 中定义在函数内的变量即是属于某个局部作用域，而定义在函数外的变量即是属于全局作用域。
-- 全局作用域
-- 函数作用域
-- 块级作用域：类似于 if、switch 条件选择或者 for、while 这样的循环体即是所谓的块级作用域；在 ES5 中，要实现块级作用域，即需要在原来的函数作用域上包裹一层，即在需要限制变量提升的地方手动设置一个变量来替代原来的全局变量，而在 ES6 中，可以直接利用 let 关键字达成这一点。
-- 词法作用域：词法作用域是 JavaScript 闭包特性的重要保证。一般来说，在编程语言里我们常见的变量作用域就是词法作用域与动态作用域（Dynamic Scope），绝大部分的编程语言都是使用的词法作用域。词法作用域注重的是所谓的 Write-Time，即编程时的上下文，而动态作用域以及常见的 this 的用法，都是 Run-Time，即运行时上下文。词法作用域关注的是函数在何处被定义，而动态作用域关注的是函数在何处被调用。JavaScript 是典型的词法作用域的语言,编译阶段就能够知道全部标识符在哪里以及是如何声明的，所以词法作用域是静态的作用域，也就是词法作用域能够预测在执行代码的过程中如何查找标识符。
 ```js
-function foo() {
-    console.log( a ); // 2 in Lexical Scope ，But 3 in Dynamic Scope
+console.log(a) // Uncaught ReferenceError: a is not defined
+console.log(b) // undefined
+a = 1
+var b = 2
+function c() {
+  var d = 3
+  console.log(f) // Uncaught ReferenceError: f is not defined
+  f = 4
+  console.log(d , window.d, window.f, f)
 }
-function bar() {
-    var a = 3;
-    foo();
-}
-var a = 2;
-bar();
+console.log(f) // Uncaught ReferenceError: f is not defined
+console.log(window.a, window.b, window.d, window.g) // 1, 2, undefined, undefined
+c() // 3, undefined, 4, 4
 ```
 ```js
-function dummy1() {
-    var x = 5;
-    fun();
+console.log(fn1) // ƒ fn1() { console.log('fn1') }
+fn1() // fn1
+function fn1() {
+  console.log('fn1')
 }
-
-function dummy2() {
-    var x = 10;
-    fun();
-};
-
-function fun() {
-    console.log(x)
+console.log(fn2) // undefined
+fn2() //caught TypeError: fn2 is not a function
+var fn2 = function() {
+  console.log('fn2')
 }
-dummy1()
-dummy2()
-//dynamic scope: 5 10
-//lexical scope: x is not defined
-```
-
-
-
-
-
-
-
-### Lexical Scoping 
-词法作用域/静态作用域：函数的作用域在函数定义的时候就决定了。
-动态作用域：函数的作用域是在函数调用的时候才决定的。
-```js
-var value = 1
-function foo() {
-  console.log(value)
-}
-function bar() {
-  var value = 2
-  foo()
-}
-bar()
-// Lexical Scoping 输出1
-// Dynamic Scope 输出2
-
-```
-
-### IIFE
-立即执行函数IIFE Imdiately Invoked Function Expression
-IIFE只有一个作用：创建一个独立的作用域。这个作用域里面的变量，外面访问不到（即避免了「变量污染」）
-这里有一个英语小知识
-invoked 
-1. 是形容词：立即调用的函数表达式
-2. 实际上调用是被动的含义，要用的是过去分词，不叫过去式!
-3. exciting news 现在分词做形容词，这个就表示令人兴奋的消息，是一个主动的意思
-```js
-//方法一
-(function(){})()
-//方法二
-(function(){}())
-//错误写法
-function(){}
-//让Javascript引擎认为这是一个表达式的方法还有很多
-!function(){}();
-+function(){}();
--function(){}();
-~function(){}();
-new function(){ /* code */ }
-new function(){ /* code */ }() // 只有传递参数时，才需要最后那个圆括号
 ```
 
 # Hoisting
@@ -335,6 +275,29 @@ function before(func,n){
 
 编译和解释结果上的区别：编译的话会把输入的源程序翻译生成为目标代码，并存下来（无论是存在内存中还是磁盘上），后续执行可以复用；解释的话则是把源程序中的指令逐条解释，不生成也不存下目标代码，后续执行没有多少可复用的信息。
 
+### IIFE
+立即执行函数IIFE Imdiately Invoked Function Expression
+IIFE只有一个作用：创建一个独立的作用域。这个作用域里面的变量，外面访问不到（即避免了「变量污染」）
+这里有一个英语小知识
+invoked 
+1. 是形容词：立即调用的函数表达式
+2. 实际上调用是被动的含义，要用的是过去分词，不叫过去式!
+3. exciting news 现在分词做形容词，这个就表示令人兴奋的消息，是一个主动的意思
+```js
+//方法一
+(function(){})()
+//方法二
+(function(){}())
+//错误写法
+function(){}
+//让Javascript引擎认为这是一个表达式的方法还有很多
+!function(){}();
++function(){}();
+-function(){}();
+~function(){}();
+new function(){ /* code */ }
+new function(){ /* code */ }() // 只有传递参数时，才需要最后那个圆括号
+```
 
 (变量作用域与提升)[https://juejin.cn/post/6844903490989342728]
 (我用了两个月的时间才理解 let)[https://zhuanlan.zhihu.com/p/28140450]
