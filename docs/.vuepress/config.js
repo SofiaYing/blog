@@ -17,6 +17,7 @@ module.exports = {
             // { text: 'sidebar', link: '/views/sidebar/' },
             // { text: 'sidebar', link: '/views/sidebargroup/' }
         ],
+        subSidebar: 'auto',
         // sidebar: {
         //   '/views/sidebar/': [
         //     '',
