@@ -112,47 +112,8 @@ The execution context is created in two phases: **1) Creation Phase(内存创建
   In the function execution context, the value of this depends on how the function is called. If it is called by an object reference, then the value of this is set to that object, otherwise, the value of this is set to the global object or undefined(in strict mode).
   :::
 
-  ```js
-  //Abstractly, the lexical environment looks like this in pseudocode
-  GlobalExectionContext = {
-    LexicalEnvironment: {
-      EnvironmentRecord: {
-        Type: "Object",
-        // Identifier bindings go here
-      }
-      outer: <null>,
-      this: <global object>
-    }
-  }
-  FunctionExectionContext = {
-    LexicalEnvironment: {
-      EnvironmentRecord: {
-        Type: "Declarative",
-        // Identifier bindings go here
-      }
-      outer: <Global or outer function environment reference>,
-      this: <depends on how function is called>
-    }
-  }
-  ```
-
   **Variable Environment**  
   In ES6, one difference between LexicalEnvironment component and the VariableEnvironment component is that the former is used to store function declaration and variable (let and const) bindings, while the latter is used to store the variable (var) bindings only.
-    
-  ```js
-  //ES3 执行上下文可以表述为如下抽象对象
-  executionContextObject = {
-      'scopeChain': {}, // contains its own variableObject and other variableObject of the parent execution contexts
-      'variableObject': {}, // contains function arguments, inner variable and function declarations
-      'this': valueOfThis
-  }
-  // ES2018
-  ExecutionContext = {
-    LexicalEnvironment = <ref. to LexicalEnvironment in memory>,
-    VariableEnvironment = <ref. to VariableEnvironment in  memory>,
-    ...
-  }
-  ```
 
 ### **Execution Phase**
 
@@ -168,6 +129,7 @@ function multiply(e, f) {
 }
 c = multiply(20, 30);
 ```
+When the above code is executed, the JavaScript engine creates a global execution context to execute the global code. 
 * creation phase
 ```js
 GlobalExectionContext = {
@@ -191,7 +153,7 @@ GlobalExectionContext = {
   }
 }
 ```
-* ececution phase
+* execution phase
 ```js
 GlobalExectionContext = {
   LexicalEnvironment: {
@@ -215,7 +177,54 @@ GlobalExectionContext = {
   }
 }
 ```
-
+When a call to function multiply(20, 30) is encountered, a new function execution context is created to execute the function code. 
+* creation phase
+```js
+FunctionExectionContext = {
+  LexicalEnvironment: {
+    EnvironmentRecord: {
+      Type: "Declarative",
+      // Identifier bindings go here
+      Arguments: {0: 20, 1: 30, length: 2},
+    },
+    outer: <GlobalLexicalEnvironment>,
+    ThisBinding: <Global Object or undefined>,
+  },
+  VariableEnvironment: {
+    EnvironmentRecord: {
+      Type: "Declarative",
+      // Identifier bindings go here
+      g: undefined
+    },
+    outer: <GlobalLexicalEnvironment>,
+    ThisBinding: <Global Object or undefined>
+  }
+}
+```
+* execution phase
+```js
+FunctionExectionContext = {
+  LexicalEnvironment: {
+    EnvironmentRecord: {
+      Type: "Declarative",
+      // Identifier bindings go here
+      Arguments: {0: 20, 1: 30, length: 2},
+    },
+    outer: <GlobalLexicalEnvironment>,
+    ThisBinding: <Global Object or undefined>,
+  },
+  VariableEnvironment: {
+    EnvironmentRecord: {
+      Type: "Declarative",
+      // Identifier bindings go here
+      g: 20
+    },
+    outer: <GlobalLexicalEnvironment>,
+    ThisBinding: <Global Object or undefined>
+  }
+}
+```
+After the function completes, the returned value is stored inside c. So the global lexical environment is updated. After that, the global code completes and the program finishes.
 ## 参考文献
 1. [How does JavaScript and JavaScript engine work in the browser and node?](https://medium.com/jspoint/how-javascript-works-in-browser-and-node-ab7d0d09ac2f)
 2. [Understanding Execution Context and Ececution Stack in JavaScript](https://blog.bitsrc.io/understanding-execution-context-and-execution-stack-in-javascript-1c9ea8642dd0)
