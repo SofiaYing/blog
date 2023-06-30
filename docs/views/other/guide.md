@@ -1,5 +1,5 @@
 ---
-title: 新篇
+title: 示例
 date: 2020-11-12
 categories:
   - other

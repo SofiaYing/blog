@@ -36,6 +36,8 @@ A stack is LIFO (last in, first out) data storage that stores the current functi
 There are various criteria for optimizing JavaScript code. Before JavaScript code is passed to the interpreter or baseline compiler, it has to first get parsed into an Abstract Syntax Tree (AST) which is a tree-like structure of the code.
 
 When we run a JavaScript application, we do not need all the code at the application startup time. For example, if we have a function that is called on the user action, like a button click, that code can be parsed later.
+
+Identifying things that need to be parsed immediately and generating machine code is the best strategy for faster application bootstrap.
 :::
 - **Scope 作用域** 引擎的另一位好朋友，负责收集并维护由所有声明的标识符（变量 varibale）组成的一系列查询(variable lookups)，并实施一套非常严格的规则，确定当前执行的代码对这些标识符的访问权限。
 ::: details
@@ -44,6 +46,13 @@ Scope in JavaScript refers to the accessibility /ək,sesə'biləti/（可访问�
 :::
 
 比起需要三个步骤的传统编译语言（Tokenizing/Lexing 分词/词法分析；Parsing 解析/语法分析；Code Generation 代码生成），JavaScript引擎要复杂的多，大部分情况下编译发生在代码执行前的几微秒时间内，在所要讨论的作用域背后，JavaScript引擎用尽了各种办法来保证性能最佳。
+
+- 第一步：V8 引擎刚拿到 执行上下文 的时候，会把代码从上到下一行一行的先做分词/词法分析(Tokenizing/Lexing)。分词是指：比如 var a = 2; 这段代码，会被分词为：var a 2和;这样的原子符号(atomic token)；词法分析是指：登记变量声明、函数声明、函数声明的形参
+- 第二步：在分词结束以后，会做代码解析，引擎将 token 解析翻译成一个 AST(抽象语法树)， 在这一步的时候，如果发现语法错误，就会直接报错不会再往下执行
+- 第三步：引擎生成 CPU 可以执行的机器码
+在第一步里有个词法分析，它用来登记变量声明、函数声明、函数声明的形参，后续代码执行的时候就知道去哪里拿变量的值和函数了，这个登记的地方就是Lexical Environment(词法环境)
+
+![编译执行](./images/compileAndInterpret.png)
 
 ## **Execution Context 执行上下文**
 Simply put, an execution context is an abstract concept of an environment where the Javascript code is evaluated and executed. Whenever any code is run in JavaScript, it’s run inside an execution context.
@@ -74,6 +83,11 @@ JavaScript的可执行代码（executable code）只有三种：全局代码、�
 - Eval Function Execution Context
 
 ### **Execution Context Stack (ESC)/ Call Stack 调用栈**
+当一段代码被执行时，JavaScript 引擎先会对其进行编译，并创建执行上下文 
+- 当 JavaScript 执行全局代码的时候，会编译全局代码并创建全局执行上下文，而且在整个页面的生存周期内，全局执行上下文只有一份。 
+- 当调用一个函数的时候，函数体内的代码会被编译，并创建函数执行上下文，一般情况下，函数执行结束之后，创建的函数执行上下文会被销毁。 
+- 当使用 eval 函数的时候，eval 的代码也会被编译，并创建执行上下文。
+
 Execution context stack, also known as “call stack” in other programming languages, is a stack with a LIFO (Last in, First out) structure, which is used to store all the execution context created during the code execution.
 
 When the JavaScript engine first encounters your script, it creates a global execution context and pushes it to the current execution stack. Whenever the engine finds a function invocation, it creates a new execution context for that function and pushes it to the top of the stack.
@@ -229,3 +243,5 @@ After the function completes, the returned value is stored inside c. So the glob
 1. [How does JavaScript and JavaScript engine work in the browser and node?](https://medium.com/jspoint/how-javascript-works-in-browser-and-node-ab7d0d09ac2f)
 2. [Understanding Execution Context and Ececution Stack in JavaScript](https://blog.bitsrc.io/understanding-execution-context-and-execution-stack-in-javascript-1c9ea8642dd0)
 3. [JavaScript深入之执行上下文栈](https://github.com/mqyqingfeng/Blog/issues/4)
+4. [深入理解JavaScript——词法环境](https://zhuanlan.zhihu.com/p/573310581)
+5. [浏览器原理 07 调用栈：为什么JavaScript代码会出现栈溢出？](https://blog.51cto.com/kaimo313/5588210)
