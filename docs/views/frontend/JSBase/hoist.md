@@ -6,7 +6,6 @@ categories:
 tags :
   - base
 ---
-
 ```js
 console.log(a) // Uncaught ReferenceError: a is not defined
 console.log(b) // undefined
