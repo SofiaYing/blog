@@ -255,3 +255,13 @@ DeviceMotionEvent.requestPermission().then(function (state) {
 31. 微信分享常见问题
 - 设置缩略图、描述失败（无报错）：在微信内打开页面，页面未加载完成时，由于微信初始化设置未完成，分享时可能会出现设置缩略图、描述失败情况
 - 部分手机在微信内无法打开http协议的地址
+
+### 32. github push 失败
+Failed to connect to github.com port 443 after 10 ms: Connection refused
+设置代理
+git config --global https.proxy http://127.0.0.1:1081
+git config --global http.proxy http://127.0.0.1:1081
+注意： 代理地址为本机代理服务器地址。（如使用了vpn，要查看vpn的代理地址）
+取消设置
+git config --global --unset https.proxy
+git config --global --unset http.proxy

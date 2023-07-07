@@ -6,6 +6,7 @@ categories:
 tags :
   - base
 ---
+
 ```js
 console.log(a) // Uncaught ReferenceError: a is not defined
 console.log(b) // undefined
@@ -306,3 +307,5 @@ new function(){ /* code */ }() // 只有传递参数时，才需要最后那个�
 ()[https://medium.com/sessionstack-blog/how-does-javascript-actually-work-part-1-b0bacc073cf]
 [https://blog.bitsrc.io/understanding-execution-context-and-execution-stack-in-javascript-1c9ea8642dd0]
 (JS的执行上下文和作用域到底有什么区别？)[https://www.zhihu.com/question/482318118]
+
+https://blog.bitsrc.io/hoisting-in-modern-javascript-let-const-and-var-b290405adfda
