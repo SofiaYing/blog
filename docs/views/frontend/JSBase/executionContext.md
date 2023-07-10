@@ -238,10 +238,26 @@ FunctionExectionContext = {
   }
 }
 ```
-After the function completes, the returned value is stored inside c. So the global lexical environment is updated. After that, the global code completes and the program finishes.
+After the function completes, the returned value is stored inside c. So the global lexical environment is updated. 
+```js
+GlobalExectionContext = {
+  ...
+  VariableEnvironment: {
+    EnvironmentRecord: {
+      Type: "Object",
+      // Identifier bindings go here
+      c: 12000,
+    }
+    outer: <null>,
+    ThisBinding: <Global Object>
+  }
+}
+```
+After that, the global code completes and the program finishes.
 ## 参考文献
 1. [How does JavaScript and JavaScript engine work in the browser and node?](https://medium.com/jspoint/how-javascript-works-in-browser-and-node-ab7d0d09ac2f)
 2. [Understanding Execution Context and Ececution Stack in JavaScript](https://blog.bitsrc.io/understanding-execution-context-and-execution-stack-in-javascript-1c9ea8642dd0)
 3. [JavaScript深入之执行上下文栈](https://github.com/mqyqingfeng/Blog/issues/4)
 4. [深入理解JavaScript——词法环境](https://zhuanlan.zhihu.com/p/573310581)
 5. [浏览器原理 07 调用栈：为什么JavaScript代码会出现栈溢出？](https://blog.51cto.com/kaimo313/5588210)
+6. [avaScript开发者应懂的33个概念](https://github.com/leonardomso/33-js-concepts)

@@ -74,7 +74,7 @@ When a variable is used in JavaScript, the JavaScript engine will try to find th
 
 If it’s still could not find the variable, it will either implicitly declare the variable in the global scope (if not in strict mode) or return an error.
 
-### **How Does JavaScript Engine Perform Variable Loopups?**
+### **How Does JavaScript Engine Perform Variable Lookups?**
 Now that we know what scope, scope chain and lexical environment are, let’s now understand how JavaScript engine uses the lexical environment to determine scope and scope chain.
 
 > <font color= #000>perform</font>  *to do something, especially something difficult or useful*
@@ -114,11 +114,12 @@ After that, the JavaScript engine executes the console.log(`${greeting} ${name}`
 The JavaScript engine tries to find the greeting and name variables inside the function’s lexical environment. It finds the name variable inside the current lexical environment but it won’t be able to find the greeting variable inside the current lexical environment.
 
 So it looks inside the outer lexical environment (defined by the outer property i.e global lexical environment) and finds the greeting variable.
-::: tip
-  A new lexical environment is created only for let and const declarations, not var declarations. var declarations are added to the current lexical environment (global or function lexical environment).
 :::
 
 Next, the JavaScript engine executes at the code inside the block. So it creates a new lexical environment for that block.
+::: tip
+  A new lexical environment is created only for let and const declarations, not var declarations. var declarations are added to the current lexical environment (global or function lexical environment).
+:::
 ```js
 blockLexicalEnvironment = {
   greeting: 'Hello World',
@@ -129,8 +130,7 @@ So in a nutshell, a scope is an area where a variable is visible and accessible.
 
 JavaScript uses lexical scope which means that scope of variables is determined at compile time. The JavaScript engine uses the lexical environment to store the variables during the program execution.
 
->
-**补充：关于ES3的scopeChain是怎么产生的？**
+> **补充：关于ES3的scopeChain是怎么产生的？**
 1. [Execution context, Scope chain and JavaScript internals](https://medium.com/@happymishra66/execution-context-in-javascript-319dd72e8e2c)
 2. [JavaScript深入之作用域链](https://github.com/mqyqingfeng/Blog/issues/6)
 
