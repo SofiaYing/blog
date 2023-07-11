@@ -126,6 +126,13 @@ function before(func,n){
   }
 }
 ```
-
+```js
+for(var i = 0; i < 6; i++){
+  setTimeout(() => {
+    console.log(i)
+  },100)
+}
+console.log(i)
+```
 (闭包详解一)[https://juejin.cn/post/6844903612879994887]
 (闭包详解二：JavaScript中的高阶函数)[https://juejin.cn/post/6844903616885555214]

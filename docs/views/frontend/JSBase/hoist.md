@@ -182,6 +182,21 @@ class Person {
   }
 }
 ```
+## 思考题
+```js
+console.log(foo); // undefined
+console.log(bar) // 函数多了一个赋值过程，var只有创建和提升（函数比var厉害）
+var bar
+function bar() {}
+{
+	console.log(foo); // function foo {...}
+	foo = 1;
+	function foo() {}
+	foo = 2;
+	console.log(foo); // 2 此时foo已经是函数的foo了
+}
+console.log(foo); // 1
+```
 
 ## 参考文献
 1. [Hoisting in Modern JavaScript — let, const, and var](https://blog.bitsrc.io/hoisting-in-modern-javascript-let-const-and-var-b290405adfda)
