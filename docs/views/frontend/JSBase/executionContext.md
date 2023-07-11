@@ -98,6 +98,10 @@ Each entry in the Call Stack is called a Stack Frame.
 
 Once all the code is executed, the JavaScript engine removes the global execution context from the current stack.
 
+::: tip
+There can only be one currently running execution context (Because JavaScript is single threaded language), which is managed by a stack data structure known as Execution Stack or Call Stack.
+:::
+
 ## **How is the Execution Context created?**
 The execution context is created in two phases: **1) Creation Phase(内存创建)** and **2) Execution Phase（代码执行）**.
 ### **Creation Phase**

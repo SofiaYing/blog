@@ -1,3 +1,29 @@
+---
+title: Closure
+date: 2023-7-10
+categories:
+  - frond-end
+tags :
+  - base
+---
+## What is Closure?
+「函数」和「函数内部能访问到的变量」的总和，就是一个闭包。
+
+所以在《JavaScript权威指南》中就讲到：从技术的角度讲，所有的JavaScript函数都是闭包。
+
+A closure is the combination of a function bundled together (enclosed) with references to its surrounding state (the lexical environment). In other words, a closure gives you access to an outer function's scope from an inner function. In JavaScript, closures are created every time a function is created, at function creation time.
+
+A closure is a function that has access to its outer function scope even after the outer function has returned. This means a closure can remember and access variables and arguments of its outer function even after the function has finished.
+```js
+var a = 1
+function foo() { 
+  console.log(a)
+}
+```
+### What is a Lexical Scope?
+A lexical scope or static scope in JavaScript refers to the accessibility of the variables, functions, and objects based on their physical location in the source code. 
+[更多请查看](./scope.html)
+
 ### 闭包
 当函数可以记住并访问所在的词法作用域时，就产生了闭包，即使函数是在当前词法作用域之外执行。
 ```js
@@ -127,12 +153,62 @@ function before(func,n){
 }
 ```
 ```js
-for(var i = 0; i < 6; i++){
-  setTimeout(() => {
-    console.log(i)
-  },100)
+for(var i = 0; i < 6; i++){ 
+  console.log(i) // 0 1 2 3 4 5
 }
-console.log(i)
+console.log(i) // 6 for循环非异步，执行到这里时，for循环已经执行完了，此时i为6
 ```
+```js
+function waitSomeTime(msg, time) {
+	setTimeout(function () {
+		console.log(msg)
+	}, time);
+}
+waitSomeTime('hello', 1000);
+```
+```js
+function showHelp(help) {
+  document.getElementById('help').innerHTML = help;
+}
+
+function setupHelp() {
+  var helpText = [
+      {'id': 'email', 'help': 'Your e-mail address'},
+      {'id': 'name', 'help': 'Your full name'},
+      {'id': 'age', 'help': 'Your age (you must be over 16)'}
+    ];
+
+  for (var i = 0; i < helpText.length; i++) {
+    var item = helpText[i];
+    document.getElementById(item.id).onfocus = function() {
+      showHelp(item.help);
+    }
+  }
+}
+
+setupHelp();
+```
+
+```js
+function getCounter() {
+  let counter = 0;
+  return function() {
+    return counter++;
+  }
+}
+let count = getCounter();
+console.log(count());  // 0
+console.log(count());  // 1
+console.log(count());  // 2
+```
+Again we are storing the anonymous inner function returned by getCounter function into the count variable. As count function is now a closure, it can access the counter variable of getCounter function even after getCounter() has returned.
+
+But notice that the value of the counter is not resetting to 0 on each count function call as it usually should.
+
+That’s because, at each call of count(), a new scope for the function is created, but there is only single scope created for getCounter function, because the counter variable is defined in the scope of getCounter(), it would get incremented on each count function call instead of resetting to 0.
+
+## 参考文献
 (闭包详解一)[https://juejin.cn/post/6844903612879994887]
 (闭包详解二：JavaScript中的高阶函数)[https://juejin.cn/post/6844903616885555214]
+[JS中的闭包是什么](https://zhuanlan.zhihu.com/p/22486908)
+[Understanding Closures in JavaScript](https://blog.bitsrc.io/a-beginners-guide-to-closures-in-javascript-97d372284dda)
