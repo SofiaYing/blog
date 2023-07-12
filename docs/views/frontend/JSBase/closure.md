@@ -30,7 +30,7 @@ function foo() {
 闭包其实是 JS 函数作用域的副产品。是由于 JS 的函数内部可以使用函数外部的变量，所以这段代码正好符合了闭包的定义。而不是 JS 故意要使用闭包。很多编程语言也支持闭包，另外有一些语言则不支持闭包。
 ### What is a Lexical Scope?
 A lexical scope or static scope in JavaScript refers to the accessibility of the variables, functions, and objects based on their physical location in the source code. 
-[更多请查看](./scope.html)
+[更多请查看Scope篇章](./scope.html)
 
 ## How do Closures Work?
 ```js
@@ -277,11 +277,87 @@ But notice that the value of the counter is not resetting to 0 on each count fun
 
 That’s because, at each call of count(), a new scope for the function is created, but there is only single scope created for getCounter function, because the counter variable is defined in the scope of getCounter(), it would get incremented on each count function call instead of resetting to 0.
 
+## **a tricky JavaScript Question**
+```js
+// interviewer: what will the following code output?
+const arr = [10, 12, 15, 21];
+for (var i = 0; i < arr.length; i++) {
+  setTimeout(function() {
+    console.log('Index: ' + i + ', element: ' + arr[i]);
+  }, 3000);
+}
+// 4, undefined
+// 4, undefined
+// 4, undefined
+// 4, undefined
+```
+The reason for this is because the setTimeout function creates a function (the closure) that has access to its outer scope, which is the loop that contains the index i. After 3 seconds go by, the function is executed and it prints out the value of i, which at the end of the loop is at 4 because it cycles through 0, 1, 2, 3, 4 and the loop finally stops at 4.arr[4] does not exist, which is why you get undefined.
+::: details Why is this question so popular?
+This question deals with the topics: closures, setTimeout, and scoping. 
+
+This question tests your knowledge of some important JavaScript concepts, and because of how the JavaScript language works this is actually something that can come up quite often when you’re working — namely, needing to use setTimeout or some sort of async function within a loop.
+:::
+### solution 1
+involves passing the needed parameters into the inner function
+```js
+const arr = [10, 12, 15, 21];
+for (var i = 0; i < arr.length; i++) {
+  (function(){
+    var j = i
+    setTimeout(function() {
+      console.log('Index: ' + j + ', element: ' + arr[j]);
+    }, 3000);
+  })()
+}
+// 或
+const arr = [10, 12, 15, 21];
+for (var i = 0; i < arr.length; i++) {
+  setTimeout(function(j) {
+    return function() {
+      console.log('Index: ' + j + ', element: ' + arr[j]);
+    }
+  }(i), 3000);
+}
+```
+### solution 2
+```js
+const arr = [10, 12, 15, 21];
+for (let i = 0; i < arr.length; i++) {
+  // 1. for( let i = 0; i< 5; i++) 这句话的圆括号之间，有一个隐藏的作用域
+  // 2. for( let i = 0; i< 5; i++) { 循环体 } 在每次执行循环体之前，JS 引擎会把 i 在循环体的上下文中重新声明及初始化一次。
+
+  // 类似于 let i = 隐藏作用域中的i
+  setTimeout(function() {
+    console.log('Index: ' + i + ', element: ' + arr[i]);
+  }, 3000);
+}
+```
+**类似的问题**
+```js
+for (var i=0; i<10; i++) {
+  document.getElementById(i).onclick = (function(x){
+    return function(){
+      alert(x);
+    }
+  })(i);
+}
+// 即
+function generateMyHandler (x) {
+  return function(){
+    alert(x);
+  }
+}
+
+for (var i=0; i<10; i++) {
+  document.getElementById(i).onclick = generateMyHandler(i);
+}
+```
 ## 关于闭包的谣言——闭包会造成内存泄露？
 这个谣言是如何来的？因为 IE。IE 有 bug，IE 在我们使用完闭包之后，依然回收不了闭包里面引用的变量。这是 IE 的问题，不是闭包的问题。参见司徒正美的[这篇文章](https://www.cnblogs.com/rubylouvre/p/3345294.html)。
 
 ## 参考文献
 (闭包详解一)[https://juejin.cn/post/6844903612879994887]
 (闭包详解二：JavaScript中的高阶函数)[https://juejin.cn/post/6844903616885555214]
-[JS中的闭包是什么](https://zhuanlan.zhihu.com/p/22486908)
-[Understanding Closures in JavaScript](https://blog.bitsrc.io/a-beginners-guide-to-closures-in-javascript-97d372284dda)
+1. [JS中的闭包是什么](https://zhuanlan.zhihu.com/p/22486908)
+2. [Understanding Closures in JavaScript](https://blog.bitsrc.io/a-beginners-guide-to-closures-in-javascript-97d372284dda)
+3. [A Tricky JavaScript Interview Question Asked by Google and Amazon](https://medium.com/coderbyte/a-tricky-javascript-interview-question-asked-by-google-and-amazon-48d212890703)
