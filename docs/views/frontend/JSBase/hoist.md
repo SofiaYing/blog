@@ -62,7 +62,7 @@ variableEnvironment = {
   a: undefined
 }
 ```
-### IIFE 立即执行函数
+### IIFE 立即执行函数 mmediately-invoked function expressions
 In the past, as there was only var, and it has no block-level visibility, programmers invented a way to emulate it. What they did was called “immediately-invoked function expressions” (abbreviated as IIFE).
 立即执行函数IIFE Imdiately Invoked Function Expression
 

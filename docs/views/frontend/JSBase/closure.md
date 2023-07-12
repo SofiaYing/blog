@@ -11,19 +11,89 @@ tags :
 
 所以在《JavaScript权威指南》中就讲到：从技术的角度讲，所有的JavaScript函数都是闭包。
 
-A closure is the combination of a function bundled together (enclosed) with references to its surrounding state (the lexical environment). In other words, a closure gives you access to an outer function's scope from an inner function. In JavaScript, closures are created every time a function is created, at function creation time.
+A closure is a way to access and manipulate external variables from within a function.
+
+::: details 
+A closure is the combination of a function bundled together (enclosed) with references to its surrounding state (the lexical environment). In other words, a closure gives you access to an outer function's scope from an inner function. In JavaScript, closures are created every time a function is created, at function creation time. - MDN
 
 A closure is a function that has access to its outer function scope even after the outer function has returned. This means a closure can remember and access variables and arguments of its outer function even after the function has finished.
+:::
+
 ```js
+// 一个闭包：foo 和可访问的外部变量 a
 var a = 1
 function foo() { 
   console.log(a)
 }
 ```
+
+闭包其实是 JS 函数作用域的副产品。是由于 JS 的函数内部可以使用函数外部的变量，所以这段代码正好符合了闭包的定义。而不是 JS 故意要使用闭包。很多编程语言也支持闭包，另外有一些语言则不支持闭包。
 ### What is a Lexical Scope?
 A lexical scope or static scope in JavaScript refers to the accessibility of the variables, functions, and objects based on their physical location in the source code. 
 [更多请查看](./scope.html)
 
+## How do Closures Work?
+```js
+var a = 1
+function foo() { 
+  var b = 25
+  console.log(a)
+}
+foo()
+```
+When the JavaScript engine creates a global execution context to execute global code, it also creates a new lexical environment to store the variables and functions defined in the global scope. 
+```js
+globalLexicalEnvironment = {
+  environmentRecord: {
+      a : 1,
+      foo : < reference to function object >
+  }
+  outer: null
+}
+```
+Here the outer lexical environment is set to null because there is no outer lexical environment for the global scope.
+
+When the engine creates execution context for foo() function, it also creates a lexical environment to store variables defined in that function during execution of the function. 
+
+The outer lexical environment of the function is set to the global lexical environment because the function is surrounded by the global scope in the source code.
+```js
+functionLexicalEnvironment = {
+  environmentRecord: {
+      b : 25,
+  }
+  outer: <globalLexicalEnvironment>
+}
+```
+::: tip
+When a function completes, its execution context is removed from the stack, but its lexical environment may or may not be removed from the memory depending on if that lexical environment is referenced by any other lexical environments in their outer lexical environment property.
+:::
+
+## 闭包的应用
+### 使用闭包的目的——隐藏变量（函数嵌套的使用方法）
+```js
+function foo(){
+  var local = 1
+  function bar(){ //使用函数嵌套的方式使用闭包，是为了制造局部变量local，外部就无法直接修改local，只能通过间接的方式，从而达到隐藏变量的目的
+    local++
+    return local
+  }
+  return bar // return 是为了外部可以使用闭包，使用window.bar = bar 也是一样的效果
+}
+
+var func = foo()
+func()
+```
+```js
+!function(){ // 使用IIFE，与函数嵌套是一样的目的，为了隐藏变量
+  var lives = 50
+  window.addOneLive = function(){
+    lives += 1
+  }
+  window.reduceOneLive = function(){
+    lives -= 1
+  }
+}()
+```
 ### 闭包
 当函数可以记住并访问所在的词法作用域时，就产生了闭包，即使函数是在当前词法作用域之外执行。
 ```js
@@ -206,6 +276,9 @@ Again we are storing the anonymous inner function returned by getCounter functio
 But notice that the value of the counter is not resetting to 0 on each count function call as it usually should.
 
 That’s because, at each call of count(), a new scope for the function is created, but there is only single scope created for getCounter function, because the counter variable is defined in the scope of getCounter(), it would get incremented on each count function call instead of resetting to 0.
+
+## 关于闭包的谣言——闭包会造成内存泄露？
+这个谣言是如何来的？因为 IE。IE 有 bug，IE 在我们使用完闭包之后，依然回收不了闭包里面引用的变量。这是 IE 的问题，不是闭包的问题。参见司徒正美的[这篇文章](https://www.cnblogs.com/rubylouvre/p/3345294.html)。
 
 ## 参考文献
 (闭包详解一)[https://juejin.cn/post/6844903612879994887]
