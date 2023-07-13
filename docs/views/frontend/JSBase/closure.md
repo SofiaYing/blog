@@ -223,12 +223,6 @@ function before(func,n){
 }
 ```
 ```js
-for(var i = 0; i < 6; i++){ 
-  console.log(i) // 0 1 2 3 4 5
-}
-console.log(i) // 6 for循环非异步，执行到这里时，for循环已经执行完了，此时i为6
-```
-```js
 function waitSomeTime(msg, time) {
 	setTimeout(function () {
 		console.log(msg)
