@@ -48,7 +48,7 @@ globalLexicalEnvironment = {
       a : 1,
       foo : < reference to function object >
   }
-  outer: null
+  outer: null // A reference to the outer lexical environment, the one associated with the outer code.
 }
 ```
 Here the outer lexical environment is set to null because there is no outer lexical environment for the global scope.
