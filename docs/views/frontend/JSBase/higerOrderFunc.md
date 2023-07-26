@@ -96,3 +96,11 @@ But notice that the value of the counter is not resetting to 0 on each count fun
 That’s because, at each call of count(), a new scope for the function is created, but there is only single scope created for getCounter function, because the counter variable is defined in the scope of getCounter(), it would get incremented on each count function call instead of resetting to 0.
 
 ### Array.prototype.map
+创建一个新数组，这个新数组由原数组中的每个元素都调用一次提供的函数后的返回值组成。
+```js
+const arr1 = [1, 2, 3];
+const arr2 = arr1.map(function(item) {
+  return item * 2;
+});
+console.log(arr2);
+```
