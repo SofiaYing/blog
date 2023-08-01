@@ -95,6 +95,37 @@ But notice that the value of the counter is not resetting to 0 on each count fun
 
 That’s because, at each call of count(), a new scope for the function is created, but there is only single scope created for getCounter function, because the counter variable is defined in the scope of getCounter(), it would get incremented on each count function call instead of resetting to 0.
 
+### curry 柯里化
+```js
+let a = f(x,y)
+let b = f(x=1, y) // 柯里化：将一个函数的其中一个参数固定下来，得到一个新的函数
+```
+```js
+function sum(x, y){ 
+  return x + y
+}
+
+function addOne(y) {
+  return sum(1, y)
+}
+
+function addTwo(y) {
+  return sum(2, y)
+}
+```
+```js
+function sum(x) { //从本质上讲，sum 是一个函数工厂 — 他创建了将指定的值和它的参数相加求和的函数。
+ return function(y) {
+  return x + y // 从外部词法环境获得 "a"
+ }
+}
+// 使用函数工厂创建了两个新函数 — 一个将其参数和 1 求和，另一个和 2 求和。
+var add1 = sum(1)
+var add2 = sum(2)
+
+console.log(add1(5)) //6
+```
+应用：惰性取值（比如先要进行比较复杂的计算的情况，正则、AJAX）
 ### Array.prototype.map
 创建一个新数组，这个新数组由原数组中的每个元素都调用一次提供的函数后的返回值组成。
 ```js
@@ -104,3 +135,5 @@ const arr2 = arr1.map(function(item) {
 });
 console.log(arr2);
 ```
+
+(闭包详解二：JavaScript中的高阶函数)[https://juejin.cn/post/6844903616885555214]

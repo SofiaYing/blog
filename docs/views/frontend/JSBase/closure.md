@@ -67,8 +67,90 @@ functionLexicalEnvironment = {
 ::: tip
 When a function completes, its execution context is removed from the stack, but its lexical environment may or may not be removed from the memory depending on if that lexical environment is referenced by any other lexical environments in their outer lexical environment property.
 :::
+### 例子
+1. 函数将从内到外依次在对应的词法环境中寻找目标变量
+```js
+let name = "John";
+function sayHi() {
+  alert("Hi, " + name);
+}
+name = "Pete";
+sayHi(); // "Pete"
+// 函数将从内到外依次在对应的词法环境中寻找目标变量，它使用最新的值。
+```
 
+```js
+function makeWorker() {
+  let name = "Pete";
+
+  return function() {
+    alert(name);
+  };
+}
+let name = "John";
+
+// create a function
+let work = makeWorker();
+
+// call it
+work(); // "Pete"
+// 如果在 makeWorker() 中没有 let name，那么将继续向外搜索并最终找到全局变量，正如我们可以从上图中看到的那样。在这种情况下，结果将是 "John"。
+```
+2. 独立的外部词法环境
+```js
+function makeCounter() {
+  let count = 0;
+
+  return function() {
+    return count++;
+  };
+}
+
+let counter = makeCounter();
+let counter2 = makeCounter();
+
+alert( counter() ); // 0
+alert( counter() ); // 1
+
+alert( counter2() ); // 0
+alert( counter2() ); // 1
+// 函数 counter 和 counter2 是通过 makeCounter 的不同调用创建的。因此，它们具有独立的外部词法环境，每一个都有自己的 count。
+```
+```js
+function Counter() {
+  let count = 0;
+
+  this.up = function() {
+    return ++count;
+  };
+
+  this.down = function() {
+    return --count;
+  };
+}
+
+let counter = new Counter();
+
+alert( counter.up() ); // 1
+alert( counter.up() ); // 2
+alert( counter.down() ); // 1
+```
+3. 注意作用域
+```js
+let phrase = "Hello";
+
+if (true) {
+  let user = "John";
+
+  function sayHi() {
+    alert(`${phrase}, ${user}`);
+  }
+}
+
+sayHi(); // error; 函数 sayHi 是在 if 内声明的，所以它只存在于 if 中。外部是没有 sayHi 的。
+```
 ## 闭包的应用
+
 ### 使用闭包的目的——隐藏变量（函数嵌套的使用方法）
 ```js
 function foo(){
@@ -94,84 +176,7 @@ func()
   }
 }()
 ```
-### higher-order function
-什么是高阶函数
-至少满足以下条件的中的一个，就是高阶函数：
-- 将其他函数作为参数传递（回调函数）：如AJAX callback(res),数据排序
-- 将函数作为返回值
-```js
-function forEach(arr,callback){
-  for(var i=0;i<arr.length;i++){
-    callback(arr[i])
-  }
-}
-```
-```js
-function before(func,n){
-    let result
-  if (typeof func !== 'function') {
-    throw new TypeError('Expected a function')
-  }
-  return function(...args) {
-    if (--n > 0) {
-      result = func.apply(this, args)
-    }
-    if (n <= 1) {
-      func = undefined
-    }
-    return result
-  }
-}
-```
-```js
-function waitSomeTime(msg, time) {
-	setTimeout(function () {
-		console.log(msg)
-	}, time);
-}
-waitSomeTime('hello', 1000);
-```
-```js
-function showHelp(help) {
-  document.getElementById('help').innerHTML = help;
-}
-
-function setupHelp() {
-  var helpText = [
-      {'id': 'email', 'help': 'Your e-mail address'},
-      {'id': 'name', 'help': 'Your full name'},
-      {'id': 'age', 'help': 'Your age (you must be over 16)'}
-    ];
-
-  for (var i = 0; i < helpText.length; i++) {
-    var item = helpText[i];
-    document.getElementById(item.id).onfocus = function() {
-      showHelp(item.help);
-    }
-  }
-}
-
-setupHelp();
-```
-
-```js
-function getCounter() {
-  let counter = 0;
-  return function() {
-    return counter++;
-  }
-}
-let count = getCounter();
-console.log(count());  // 0
-console.log(count());  // 1
-console.log(count());  // 2
-```
-Again we are storing the anonymous inner function returned by getCounter function into the count variable. As count function is now a closure, it can access the counter variable of getCounter function even after getCounter() has returned.
-
-But notice that the value of the counter is not resetting to 0 on each count function call as it usually should.
-
-That’s because, at each call of count(), a new scope for the function is created, but there is only single scope created for getCounter function, because the counter variable is defined in the scope of getCounter(), it would get incremented on each count function call instead of resetting to 0.
-
+### [高阶函数](./higherOrderFunc.html)
 ## **a tricky JavaScript Question**
 ```js
 // interviewer: what will the following code output?
@@ -192,10 +197,11 @@ This question deals with the topics: closures, setTimeout, and scoping.
 
 This question tests your knowledge of some important JavaScript concepts, and because of how the JavaScript language works this is actually something that can come up quite often when you’re working — namely, needing to use setTimeout or some sort of async function within a loop.
 :::
-### solution 1
-involves passing the needed parameters into the inner function
+
+解决方案
 ```js
 const arr = [10, 12, 15, 21];
+// 1 立即执行函数
 for (var i = 0; i < arr.length; i++) {
   (function(){
     var j = i
@@ -204,19 +210,19 @@ for (var i = 0; i < arr.length; i++) {
     }, 3000);
   })()
 }
-// 或
-const arr = [10, 12, 15, 21];
+// 2 传参
 for (var i = 0; i < arr.length; i++) {
   setTimeout(function(j) {
-    return function() {
-      console.log('Index: ' + j + ', element: ' + arr[j]);
-    }
+    //...
   }(i), 3000);
 }
-```
-### solution 2
-```js
-const arr = [10, 12, 15, 21];
+// 3 传参
+for(var i = 0; i < 5; i++) {
+    setTimeout((j) => {
+      //...
+    }, 1000, i)
+}
+// 4 let
 for (let i = 0; i < arr.length; i++) {
   // 1. for( let i = 0; i< 5; i++) 这句话的圆括号之间，有一个隐藏的作用域
   // 2. for( let i = 0; i< 5; i++) { 循环体 } 在每次执行循环体之前，JS 引擎会把 i 在循环体的上下文中重新声明及初始化一次。
@@ -229,30 +235,97 @@ for (let i = 0; i < arr.length; i++) {
 ```
 **类似的问题**
 ```js
-for (var i=0; i<10; i++) {
-  document.getElementById(i).onclick = (function(x){
-    return function(){
-      alert(x);
-    }
-  })(i);
-}
-// 即
-function generateMyHandler (x) {
-  return function(){
-    alert(x);
+function setupHelp() {
+  var helpText = [
+    { id: "email", help: "Your email address" },
+    { id: "name", help: "Your full name" },
+    { id: "age", help: "Your age (you must be over 16)" },
+  ];
+
+  for (var i = 0; i < helpText.length; i++) {
+    var item = helpText[i];
+    document.getElementById(item.id).onfocus = function () { //the callbacks all sharing a single lexical environment
+      showHelp(item.help);
+    };
   }
 }
 
-for (var i=0; i<10; i++) {
-  document.getElementById(i).onclick = generateMyHandler(i);
+setupHelp();
+```
+- 解决方案1. 函数工厂
+```js
+function showHelp(help) {
+  document.getElementById("help").textContent = help;
 }
+// 使用函数工厂
+function makeHelpCallback(help) {
+  return function () {
+    showHelp(help);
+  };
+}
+
+function setupHelp() {
+  var helpText = [
+      {'id': 'email', 'help': 'Your e-mail address'},
+      {'id': 'name', 'help': 'Your full name'},
+      {'id': 'age', 'help': 'Your age (you must be over 16)'}
+    ];
+
+  for (var i = 0; i < helpText.length; i++) {
+    var item = helpText[i];
+    // the makeHelpCallback function creates a new lexical environment for each callback
+    document.getElementById(item.id).onfocus = makeHelpCallback(item.help);
+  }
+}
+```
+- 解决方案2. let/const
+- 解决方案3. forEach
+```js
+helpText.forEach(function (text) {
+  document.getElementById(text.id).onfocus = function () {
+    showHelp(text.help);
+  };
+});
 ```
 ## 关于闭包的谣言——闭包会造成内存泄露？
 这个谣言是如何来的？因为 IE。IE 有 bug，IE 在我们使用完闭包之后，依然回收不了闭包里面引用的变量。这是 IE 的问题，不是闭包的问题。参见司徒正美的[这篇文章](https://www.cnblogs.com/rubylouvre/p/3345294.html)。
+### **Garbage collection**
+Usually, a Lexical Environment is removed from memory with all the variables after the function call finishes. That’s because there are no references to it. As any JavaScript object, it’s only kept in memory while it’s reachable.
+```js
+function f() {
+  let value = 123;
+
+  return function() {
+    alert(value);
+  }
+}
+
+let g = f(); // while g function exists, the value stays in memory
+g = null; // ...and now the memory is cleaned up
+```
+> **Real-life optimizations**
+As we’ve seen, in theory while a function is alive, all outer variables are also retained.
+
+But in practice, JavaScript engines try to optimize that. They analyze variable usage and if it’s obvious from the code that an outer variable is not used – it is removed.
+
+An important side effect in V8 (Chrome, Edge, Opera) is that such variable will become unavailable in debugging.
+```js
+function f() {
+  let value = Math.random();
+
+  function g() {
+    debugger; // in console: type alert(value); No such variable!
+  }
+
+  return g;
+}
+let g = f();
+g();
+```
 
 ## 参考文献
-(闭包详解一)[https://juejin.cn/post/6844903612879994887]
-(闭包详解二：JavaScript中的高阶函数)[https://juejin.cn/post/6844903616885555214]
 1. [JS中的闭包是什么](https://zhuanlan.zhihu.com/p/22486908)
 2. [Understanding Closures in JavaScript](https://blog.bitsrc.io/a-beginners-guide-to-closures-in-javascript-97d372284dda)
 3. [A Tricky JavaScript Interview Question Asked by Google and Amazon](https://medium.com/coderbyte/a-tricky-javascript-interview-question-asked-by-google-and-amazon-48d212890703)
+4. [Variable scope, closure](https://javascript.info/closure#garbage-collection)
+5. [for 循环里面使用 setTimeout](https://juejin.cn/post/7019233455645032455)
