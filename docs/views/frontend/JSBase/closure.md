@@ -329,3 +329,4 @@ g();
 3. [A Tricky JavaScript Interview Question Asked by Google and Amazon](https://medium.com/coderbyte/a-tricky-javascript-interview-question-asked-by-google-and-amazon-48d212890703)
 4. [Variable scope, closure](https://javascript.info/closure#garbage-collection)
 5. [for 循环里面使用 setTimeout](https://juejin.cn/post/7019233455645032455)
+6. [Closures](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures#creating_closures_in_loops_a_common_mistake)
