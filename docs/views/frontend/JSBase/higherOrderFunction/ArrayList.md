@@ -1,4 +1,12 @@
-# ArrayList
+---
+title: ArrayList
+date: 2023-8-6
+categories:
+  - frond-end
+tags :
+  - Array
+---
+## ArrayList
 `typeof(ArrayList)  // object`
 使用数字作为属性名称(有索引),具备length属性
 - 理论上可以将数组才具有的push,slice 等方法都加到类数组上面。但是这样为什么不直接使用数组就好了。其实恰恰相反，类数组不需要数组的那些方法，有了反而会画蛇添足。类数组对象的设计目的更多是只让你遍历和访问下标,而不是去添加或删除元素。

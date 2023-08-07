@@ -126,14 +126,38 @@ var add2 = sum(2)
 console.log(add1(5)) //6
 ```
 应用：惰性取值（比如先要进行比较复杂的计算的情况，正则、AJAX）
-### Array.prototype.map
-创建一个新数组，这个新数组由原数组中的每个元素都调用一次提供的函数后的返回值组成。
-```js
-const arr1 = [1, 2, 3];
-const arr2 = arr1.map(function(item) {
-  return item * 2;
-});
-console.log(arr2);
-```
 
+函数作为参数
+### [数组高阶函数](./higherOrderFunction/Array.md)
+
+
+## 高阶函数的作用：可以将函数任意组合
+```js
+// 求所有偶数的和
+array = [1,2,3,4,5,6,7,8,12]
+
+// 1.常规方法
+let sum = 0
+for(let i0; i < array.length; i++) {
+  if(array[i] % 2 === 0) {
+    sum += array[i]
+  }
+}
+// 2.使用高阶函数
+array.filter(function(n) {
+  n%2 === 0
+}).reduce(function(prev, next) {
+  return prev+next
+},0)
+```
+```js
+// 找出所有单数并排序
+array = [1,6,3,2,8,9]
+
+array.filter(function(n){
+  n%2 === 1
+}).sort(function(a, b) {
+  return a - b
+})
+```
 (闭包详解二：JavaScript中的高阶函数)[https://juejin.cn/post/6844903616885555214]
