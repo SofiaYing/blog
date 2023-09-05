@@ -129,9 +129,37 @@ setImmediate(() => {
   console.log('setImmediate')
 })
 ```
-
-
-
+```js
+async function async1() {
+  // 使用await关键字与Promise.then效果类似  await Promise.resolve()
+  // 同步1
+  await async2() 
+  // 相当于Promise.then()里的回调 
+  // 微任务1
+  console.log('async1 end')
+}
+async function async2() {
+  console.log('async2 end') // 同步2
+}
+setTimeout(()=>{
+  console.log('setTimeout') // 宏任务1
+},0)
+async1()
+new Promise((resolve,reject)=> {
+  console.log('promise') // 同步3
+  resolve()
+}).then(()=>{
+  console.log('promise1') // 微任务1
+}).then(()=>{
+  console.log('promise2') // 微任务2
+})
+// async2 end
+// promise
+// async1 end
+// promise1
+// promise2
+// setTimeout
+```
 
 ```js
 <ul id="myLink">
