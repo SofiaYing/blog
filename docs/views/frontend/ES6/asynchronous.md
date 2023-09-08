@@ -110,6 +110,7 @@ console.log('Script End');
 - 常见的宏任务有：script（整体代码）/setTimout/setInterval/setImmediate(node 独有)/requestAnimationFrame(浏览器独有)/IO/UI render（浏览器独有）
 - 常见的微任务有：process.nextTick(node 独有)/Promise.then()/cath()/finally()/Async/Await(就是Promise)/Object.observe/MutationObserver(html5新特性)/queueMicrotask
 ![An Overview of JavaScript Runtime Environment](../images/eventLoop.png)
+
 **macro-task queue vs task queue**
 the macro-task queue works the same as the task queue. The only small difference between the two is that the task queue is used for synchronous statements whereas the macro-task queue is used for asynchronous statements.
 It is worth mentioning that the execution of a JavaScript code execution is itself a macro-task. 
@@ -197,3 +198,5 @@ new Promise((resolve, reject) => {
 ```
 
 1.[Understanding Asynchronous JavaScript](https://blog.bitsrc.io/understanding-asynchronous-javascript-the-event-loop-74cd408419ff)
+2.[The JavaScript Event Loop: Explained](https://towardsdev.com/event-loop-in-javascript-672c07618dc9)
+3.[Understanding Promises in JavaScript](https://blog.bitsrc.io/understanding-promises-in-javascript-c5248de9ff8f)
