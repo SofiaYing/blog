@@ -50,6 +50,8 @@ A Promise is an object that holds the future value of an async operation.
 2. resolved (fulfilled): A Promise is resolved if the result is available. That is, something finished (for example, an async operation) and all went well.
 3. rejected: A Promise is rejected if an error happened.
 
+`A promise can be resolved or rejected only once. Further invocation of resolve() or reject() has no effect on Promise state.`
+
 ### Creating a Promise
 ```js
 const promise = new Promise((resolve, reject) => {
@@ -71,11 +73,21 @@ console.log('end')
 // end
 // resolved
 ```
+### Consuming a Promise
+
+We use promise chaining when we want to resolve promises in a sequence.
 #### Promise.prototype.then()
 `.then() syntax: promise.then(successCallback, failureCallback)`
+- if the promise is resolved, the successCallback is called with the value passed to resolve()(if the promise is resolved, the successCallback is called with the value passed to resolve())
+- The failureCallback is called when a promise is rejected. It takes one argument which is the value passed to reject().
+
 then方法是定义在原型对象Promise.prototype上的。它的作用是为 Promise 实例添加状态改变时的回调函数。前面说过，then方法的第一个参数是resolved状态的回调函数，第二个参数是rejected状态的回调函数，它们都是可选的。
 
 then方法返回的是一个新的Promise实例（注意，不是原来那个Promise实例）。因此可以采用链式写法，即then方法后面再调用另一个then方法。
+
+The then() and catch() methods can also return a new promise which can be handled by chaining another then() at the end of the previous then() method.
+
+We use promise chaining when we want to resolve promises in a sequence.
 ```js
 getJSON("/post/1.json").then(
   post => getJSON(post.commentURL)
@@ -121,6 +133,14 @@ setTimeout(() => { console.log(123) }, 2000);
 
 #### Promise.all()
 Promise.all()方法用于将多个 Promise 实例，包装成一个新的 Promise 实例。
+
+The then() and catch() methods can also return a new promise which can be handled by chaining another then() at the end of the previous then() method.
+
+We use promise chaining when we want to resolve promises in a sequence.
+
+This method can be useful when you have more than one promise, and you want to know when all of the promises have resolved. For example, if you are requesting data from different APIs and you want to do something with the data only when all of the requests are successful.
+
+So Promise.all() waits for all promises to succeed and fails if any of the promises in the array fails.
 ```js
 const p = Promise.all([p1, p2, p3]);
 ```
@@ -141,7 +161,7 @@ const p1 = new Promise((resolve, reject) => {
 const p2 = new Promise((resolve, reject) => {
   throw new Error('报错了');
 })
-.then(result => result)
+.then(result => result) // return result
 .catch(e => e);
 
 Promise.all([p1, p2])
@@ -151,6 +171,8 @@ Promise.all([p1, p2])
 ```
 #### Promise.race()
 Promise.race()方法用于将多个 Promise 实例，包装成一个新的 Promise 实例。
+
+This method takes an array of promises as input and returns a new promise that fulfills as soon as one of the promises in the input array fulfills or rejects as soon as one of the promises in the input array rejects. 
 ```js
 const p = Promise.race([p1, p2, p3]);
 ```

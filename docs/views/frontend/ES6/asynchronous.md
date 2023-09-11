@@ -24,11 +24,8 @@ JavaScript has a single call stack because it’s a single-threaded programming 
 ## How Does Asynchronous JavaScript Work?
 We use asynchronous callbacks to make our code non-blocking.
 
-The event loop, the web APIs and the **callback queue/message queue/task queue** are not part of the JavaScript engine, it’s a part of browser’s JavaScript runtime environment or Nodejs JavaScript runtime environment (in case of Nodejs). In Nodejs, the web APIs are replaced by the C/C++ APIs.
-
-
 ![An Overview of JavaScript Runtime Environment](../images/eventLoop.jpg)
-The event loop, the web APIs and the message queue/task queue are not part of the JavaScript engine, it’s a part of browser’s JavaScript runtime environment or Nodejs JavaScript runtime environment (in case of Nodejs). In Nodejs, the web APIs are replaced by the C/C++ APIs.
+The event loop, **the web APIs** and the message queue/task queue are not part of the JavaScript engine, it’s a part of browser’s JavaScript runtime environment or Nodejs JavaScript runtime environment (in case of Nodejs). In Nodejs, the web APIs are replaced by the C/C++ APIs.
 ```js
 const networkRequest = () => {
   setTimeout(() => {
@@ -183,19 +180,141 @@ transition-delay
 transition-timing-function liner ease-out ease-in ease-in-out
 cubic-bezier
 ```
-## Promise
-async /əˈsɪŋk/
 
-In JavaScript, promises and async/await are two different ways to handle asynchronous /eɪˈsɪŋkrənəs/  operations. 
+### 异步结果获取
+1. 回调（推荐）
+2. 轮询（不推荐）
+```js
+// 1. 回调
+function buyFruit(fn) {
+  setTimeout(()=>{
+    fn.call(undefined, '已买好水果')
+  }, (Math.random()*10+5)*1000)
+}
+buyFruit(function(){
+  console.log(arguments[0])
+})
+```
+```js
+// 2. 轮询
+function buyFruit() {
+  setTimeout(()=>{
+    window.fruit = '已买好水果'
+  }, (Math.random()*10+5)*1000)
+}
+buyFruit()
+let fruitId = setInterval(()=>{
+  if(window.fruit){
+    console.log(window.fruit)
+    window.clearInterval(fruitId)
+  } else {
+    console.log('没有东西')
+  }
+}, 1000)
+```
+#### 回调的形式
+1. Node.js 的 error-first 形式
+```js
+fs.readFile('./1.txt', (error, content)=>{
+  if(error){
+    // 失败
+  } else {
+    // 成功
+  }
+})
+
+function buyFruit(fn) {
+  setTimeout(()=>{
+    if(Math.random > 0.5) {
+      fn.call(undefined, '买到的水果')
+    } else {
+      fn.call(undefined, new Error())
+    }
+  }, (Math.random()*10+5)*1000)
+}
+buyFruit(function(r){
+  if(r instanceof Error) {
+    console.log('没买')
+  }else {
+    console.log('买了')
+  }
+})
+```
+2. jQuery 的 success/error
+```js
+$.ajax({
+  url:'',
+  success: ()=>{},
+  error: ()=>{}
+})
+```
+3. jQuery 的 donw/fail/always
+```js
+$.ajax({
+  url:''
+}).done(()=>{}).fail(()=>{}).always(()=>{})
+```
+4. Promise 的 then
+```js
+// 前端提出Promise规范，所有的异步操作都回复一个带有属性then的对象， then必须可以接收两个函数作为参数（一个成功，一个失败），并且返回的仍未带有then的对象
+axios.ajax({
+  url:''
+}).then((response)=>{ 
+  let x = !!response
+  return x
+}, (error)=>{
+  console.log('fail')
+}).then((x)=>{
+  console.log('fail') // 即使失败也会执行到这里
+})
+```
+
+### 前端经常遇见的异步
+```js
+document.getElementsByTagNames('img')[0].width // 宽度为0
+
+document.getElementsByTagNames('img')[0].onload = function() {
+  console.log(this.width) // 宽度不为0
+}
+```
+```js
+let liList = document.querySelectorAll('li')
+for(var i=0; i<liList.length; i++) { // 同步
+  liList[i].onclick = function(){ // 异步
+    console.log('i')
+  }
+}
+
+let liList = document.querySelectorAll('li')
+for(let i=0; i<liList.length; i++) { 
+  liList[i].onclick = function(){ // i的作用域在当前花括号内，相当于 j=i, console.log(j)
+    console.log(i)
+  }
+}
+```
+```js
+// 后端转前端 经常会把AJAX转出同步的
+let request = $.ajax({
+  url: '.',
+  async: false 
+})
+console.log(request.responseText)
+
+let request = $.ajax({
+  url: '.',
+  async: true,
+  success: function(response) { // 异步：请求成功后，浏览器调用该回调
+    console.log(response)
+  } 
+})
+console.log(request.responseText)
+```
+
+## Promise
+In JavaScript, promises and async/əˈsɪŋk//await are two different ways to handle asynchronous/eɪˈsɪŋkrənəs/ operations. 
 
 Promise
 A promise is an object that eventually leads to an asynchronous operation’s completion or failure. A promise can be in one of three states: pending, fulfilled, or rejected. When the asynchronous operation is completed, the Promise will either be fulfilled with a value or rejected with an error.
-
-```js
-new Promise((resolve, reject) => {
-  
-})
-```
 
 1.[Understanding Asynchronous JavaScript](https://blog.bitsrc.io/understanding-asynchronous-javascript-the-event-loop-74cd408419ff)
 2.[The JavaScript Event Loop: Explained](https://towardsdev.com/event-loop-in-javascript-672c07618dc9)
