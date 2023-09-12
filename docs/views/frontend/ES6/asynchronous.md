@@ -212,6 +212,34 @@ let fruitId = setInterval(()=>{
   }
 }, 1000)
 ```
+```js
+// 回调 Promise
+function buyFruit() {
+  var fn = (fnSuccess, fnError)=>{
+    setTimeout(()=>{
+      fnSuccess('已买好水果')
+    },1000)
+  }
+  return new Promise(fn) // fn.call(undefined, success, error)
+}
+// 进一步简化
+function buyFruit() {
+  return new Promise((resolve, reject)=>{
+    setTimeout(()=>{
+      resolve('已买好水果')
+    },1000)
+  }) 
+}
+// 使用
+var promise = buyFruit()
+promise.then((res)=>{
+  console.log(res)
+}).catch(()=>{})
+```
+```js
+// async/await
+var result = await buyFruit()
+```
 #### 回调的形式
 1. Node.js 的 error-first 形式
 ```js

@@ -197,6 +197,40 @@ ES2021 引入了Promise.any()方法。该方法接受一组 Promise 实例作为
 只要参数实例有一个变成fulfilled状态，包装实例就会变成fulfilled状态；如果所有参数实例都变成rejected状态，包装实例就会变成rejected状态。
 
 Promise.any()跟Promise.race()方法很像，只有一点不同，就是Promise.any()不会因为某个 Promise 变成rejected状态而结束，必须等到所有参数 Promise 变成rejected状态才会结束。
+
+#### Promise.resolve() 
+将现有对象转为 Promise 对象
+1. 参数为Promise实例,那么Promise.resolve将不做任何修改、原封不动地返回这个实例。
+2. 参数是一个thenable对象,thenable对象指的是具有then方法的对象，会将这个对象转为 Promise 对象，然后就立即执行thenable对象的then()方法。
+3. 参数不是具有then()方法的对象，或根本就不是对象，会参数不是具有then()方法的对象，或根本就不是对象
+4. 不带参数，则直接返回一个resolved状态的 Promise 对象。如果希望得到一个 Promise 对象，比较方便的方法就是直接调用Promise.resolve()方法。`const p = Promise.resolve();`
+
+```js
+// 立即resolve()的 Promise 对象，是在本轮“事件循环”（event loop）的结束时执行，而不是在下一轮“事件循环”的开始时。
+setTimeout(function () { 
+  console.log('three');
+}, 0);
+
+Promise.resolve().then(function () { 
+  console.log('two');
+});
+
+console.log('one');
+
+// one
+// two
+// three
+```
+#### Promise.reject()
+会返回一个新的 Promise 实例，该实例的状态为rejected
+```js
+axios({
+  url:'',
+  async: true
+}).then(()=>{
+  Promise.reject('error') //可以用来主动失败
+}).catch(()=>{})
+```
 #### 异步图片加载
 ```js
 function loadImageAsync(url) {
@@ -255,7 +289,55 @@ promise
 .catch(error => {···})
 .finally(() => {···});
 ```
+### 如何实现一个简单的Promise
+```js
+//注意输入是什么，输出是什么
+function Promise(fn) {
+  let status = 'pending'
 
+  function successNotify(){ // resolve
+    status = 'resolved'
+    toDoThen()
+  }
+  function failNotify(){ // reject
+    status = 'rejected'
+    toDoThen()
+  }
+
+  function toDoThen() {
+    if (status === 'resolved') {
+      for(let i=0; i<successArray.length; i++) {
+        successArray[i].call() 
+      }
+    } else if () {
+      for(let i=0; i<failArray.length; i++) {
+        successArray[i].call() 
+      }
+    }
+  }
+
+  let successArray = []
+  let failArray = []
+
+  fn.call(undefined, successNotify, failNotify)
+
+  return {
+    then: function(successFn, failFn){
+      successArray.push(successFn)
+      failArray.push(failFn)
+      return undefined // 正常应该返回一个含有then属性的对象，用到递归
+    }
+  }
+}
+
+var p = new Promies((resolve,reject)=>{
+  setTimeout(()=>{ 
+    resolve('success') // 异步操作，执行结束就会调用相应函数
+  },1000)
+}).then((res)=>{ // 马上就调用then，将要做的事情传给了Promise,Promise将其添加至successArray
+  console.log(res)
+})
+```
 ## References
 1.[Understanding Promises in JavaScript](https://blog.bitsrc.io/understanding-promises-in-javascript-c5248de9ff8f)
 2.[阮一峰 Promise](https://es6.ruanyifeng.com/#docs/promise)
