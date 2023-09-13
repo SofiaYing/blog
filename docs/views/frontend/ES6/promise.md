@@ -202,7 +202,7 @@ Promise.any()跟Promise.race()方法很像，只有一点不同，就是Promise.
 将现有对象转为 Promise 对象
 1. 参数为Promise实例,那么Promise.resolve将不做任何修改、原封不动地返回这个实例。
 2. 参数是一个thenable对象,thenable对象指的是具有then方法的对象，会将这个对象转为 Promise 对象，然后就立即执行thenable对象的then()方法。
-3. 参数不是具有then()方法的对象，或根本就不是对象，会参数不是具有then()方法的对象，或根本就不是对象
+3. 参数不是具有then()方法的对象，或根本就不是对象，返回一个新的 Promise 对象，状态为resolved。
 4. 不带参数，则直接返回一个resolved状态的 Promise 对象。如果希望得到一个 Promise 对象，比较方便的方法就是直接调用Promise.resolve()方法。`const p = Promise.resolve();`
 
 ```js
@@ -230,6 +230,35 @@ axios({
 }).then(()=>{
   Promise.reject('error') //可以用来主动失败
 }).catch(()=>{})
+```
+
+#### Promise.prototype.finally()
+finally()方法用于指定不管 Promise 对象最后状态如何，都会执行的操作。该方法是 ES2018 引入标准的。
+```js
+promise
+.then(result => {···})
+.catch(error => {···})
+.finally(() => {···});
+```
+### Promise实践
+```js
+getLocation() {
+  if(!this.map) return Promise.reject('map is null');
+  return new Promise((resolve,reject)=>{
+    this.map.getLocation({
+      success: resolve, // (data) => resolve(data)
+      fail: reject
+    })
+  })
+}
+
+getLocation().then((data)=>{
+  this.triggerEvent('change', {
+    data, 
+    map: this.map,
+    callback: endCallback
+  })
+})
 ```
 #### 异步图片加载
 ```js
@@ -280,14 +309,6 @@ getJSON("/posts.json").then(function(json) {
 }, function(error) {
   console.error('出错了', error);
 });
-```
-#### Promise.prototype.finally()
-finally()方法用于指定不管 Promise 对象最后状态如何，都会执行的操作。该方法是 ES2018 引入标准的。
-```js
-promise
-.then(result => {···})
-.catch(error => {···})
-.finally(() => {···});
 ```
 ### 如何实现一个简单的Promise
 ```js

@@ -7,7 +7,13 @@ tags :
   - asynchronous
 ---
 JS使用基于事件循环的单线程执行方式，而且是非抢断执行的（也就是说，无论发生什么，都会把当前任务执行完，不会出现执行到一半就去执行别的任务的情况）。
+
 JS的单线程事件循环很适合前端使用，大幅简化了程序的复杂度，同时前端少会有大型计算任务，所以性能也并非问题。
+
+我们都知道 Js 是单线程都，但是一些高耗时操作就带来了进程阻塞问题。为了解决这个问题，Js 有两种任务的执行模式：同步模式（Synchronous）和异步模式（Asynchronous）。
+
+在异步模式下，创建异步任务主要分为宏任务与微任务两种。ES6 规范中，宏任务（Macrotask） 称为 Task， 微任务（Microtask） 称为 Jobs。宏任务是由宿主（浏览器、Node）发起的，而微任务由 JS 自身发起。
+
 ::: details Asynchronous
 JavaScript is a single-threaded programming language which means only one thing can happen at a time. That is, the JavaScript engine can only process one statement at a time in a single thread.
 
@@ -104,9 +110,28 @@ console.log('Script End');
 ```
 
 ### Micro-task vs Macro-task
-- 常见的宏任务有：script（整体代码）/setTimout/setInterval/setImmediate(node 独有)/requestAnimationFrame(浏览器独有)/IO/UI render（浏览器独有）
-- 常见的微任务有：process.nextTick(node 独有)/Promise.then()/cath()/finally()/Async/Await(就是Promise)/Object.observe/MutationObserver(html5新特性)/queueMicrotask
+- 常见的宏任务有：script（整体代码）/setTimout/setInterval/setImmediate(node 独有)/requestAnimationFrame(浏览器独有)/IO/UI render（浏览器独有）/messageChannel
+- 常见的微任务有：process.nextTick(node 独有)/Promise.[then/cath/finally]/Async/Await(就是Promise)/Object.observe/MutationObserver(浏览器环境，html5新特性)/queueMicrotask
 ![An Overview of JavaScript Runtime Environment](../images/eventLoop.png)
+::: details 如何理解 script（整体代码块）是个宏任务呢?
+实际上如果同时存在两个 script 代码块，会首先在执行第一个 script 代码块中的同步代码，如果这个过程中创建了微任务并进入了微任务队列，第一个 script 同步代码执行完之后，会首先去清空微任务队列，再去开启第二个 script 代码块的执行。所以这里应该就可以理解 script（整体代码块）为什么会是宏任务。
+
+1. 同步代码不是宏任务，script整体代码在web中运行，web环境将其视为宏任务。
+2. 同步代码直接进入执行栈，执行栈清空，检查微任务队列，若不为空，则将队首微任务推入执行栈，直至微任务队列清空，再检查宏任务队列。每次执行栈清空都会优先检查微任务队列。
+```js
+setTimeout(()=>{
+  console.log(1)
+  Promise.resolve().then(()=>{
+    console.log(3)
+  })
+})
+
+setTimeout(()=>{
+  console.log(2)
+})
+// 1,3,2
+```
+:::
 
 **macro-task queue vs task queue**
 the macro-task queue works the same as the task queue. The only small difference between the two is that the task queue is used for synchronous statements whereas the macro-task queue is used for asynchronous statements.
