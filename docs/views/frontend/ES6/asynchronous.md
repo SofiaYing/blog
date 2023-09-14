@@ -22,6 +22,8 @@ While the single-threaded languages simplify writing code because you don’t ha
 Imagine requesting some data from an API. Depending upon the situation the server might take some time to process the request while blocking the main thread making the web page unresponsive.
 
 That’s where asynchronous JavaScript comes into play. Using asynchronous JavaScript (such as callbacks, promises, and async/await), you can perform long network requests without blocking the main thread.
+
+The asynchronous behavior is not part of the JavaScript language itself, rather it is built on top of the core JavaScript language in the browser (or the programming environment) and accessed through the browser APIs.
 :::
 
 [Execution Context and Call Stack](../JSBase/executionContext.md)
@@ -111,13 +113,28 @@ console.log('Script End');
 
 ### Micro-task vs Macro-task
 - 常见的宏任务有：script（整体代码）/setTimout/setInterval/setImmediate(node 独有)/requestAnimationFrame(浏览器独有)/IO/UI render（浏览器独有）/messageChannel
+
+Macro-task represents some discrete and independent work.t is worth mentioning that the execution of a JavaScript code execution is itself a macro-task.
 - 常见的微任务有：process.nextTick(node 独有)/Promise.[then/cath/finally]/Async/Await(就是Promise)/Object.observe/MutationObserver(浏览器环境，html5新特性)/queueMicrotask
 ![An Overview of JavaScript Runtime Environment](../images/eventLoop.png)
-::: details 如何理解 script（整体代码块）是个宏任务呢?
-实际上如果同时存在两个 script 代码块，会首先在执行第一个 script 代码块中的同步代码，如果这个过程中创建了微任务并进入了微任务队列，第一个 script 同步代码执行完之后，会首先去清空微任务队列，再去开启第二个 script 代码块的执行。所以这里应该就可以理解 script（整体代码块）为什么会是宏任务。
 
-1. 同步代码不是宏任务，script整体代码在web中运行，web环境将其视为宏任务。
+**如何理解 script（整体代码块）是个宏任务呢?**
+实际上如果同时存在两个 script 代码块，会首先在执行第一个 script 代码块中的同步代码，如果这个过程中创建了微任务并进入了微任务队列，第一个 script 同步代码执行完之后，会首先去清空微任务队列，再去开启第二个 script 代码块的执行。所以这里应该就可以理解 script（整体代码块）为什么会是宏任务。
+1. 同步代码不是宏任务，script整体代码在web中运行，web环境将其视为宏任务,如遇到`<script src="...">`script加载。
 2. 同步代码直接进入执行栈，执行栈清空，检查微任务队列，若不为空，则将队首微任务推入执行栈，直至微任务队列清空，再检查宏任务队列。每次执行栈清空都会优先检查微任务队列。
+
+On completion of one macro-task, the event loop moves on to the micro-task queue. 
+
+The event loop does not move to the next task outside of the micro-task queue until all the tasks inside the micro-task queue are completed. This implies that the micro-task queue has a higher priority.
+
+he event loop will keep on calling micro-tasks until there are no more micro-tasks left in the queue, even if new tasks keep getting added.
+```js
+// Syntax: Adding micro-tasks
+// The micro-task function itself takes no parameters and does not return a value.
+queueMicrotask(() => {
+    // Code to be run inside the micro-task 
+});
+```
 ```js
 setTimeout(()=>{
   console.log(1)
@@ -131,7 +148,58 @@ setTimeout(()=>{
 })
 // 1,3,2
 ```
-:::
+```js
+<script>
+  console.log(1);
+
+  setTimeout(() => {
+    console.log(5);
+  });
+
+  new Promise((resolve) => {
+    resolve();
+  }).then(() => {
+    console.log(3);
+  });
+  console.log(2);
+</script>
+
+<script>
+  console.log(4);
+</script>
+
+// 1,2,3,4,5
+```
+```js
+async function foo() {
+  console.log("start");
+  await bar();
+  console.log("end");
+}
+
+async function bar() {
+  console.log("bar");
+}
+
+console.log(1);
+
+setTimeout(() => {
+  console.log("time");
+});
+
+foo();
+
+new Promise((resolve) => {
+  console.log("p1");
+  resolve();
+}).then(() => {
+  console.log("p2");
+});
+
+console.log(2);
+
+// 1 start bar p1 end p2 time
+```
 
 **macro-task queue vs task queue**
 the macro-task queue works the same as the task queue. The only small difference between the two is that the task queue is used for synchronous statements whereas the macro-task queue is used for asynchronous statements.
