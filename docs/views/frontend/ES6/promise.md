@@ -310,7 +310,8 @@ getJSON("/posts.json").then(function(json) {
   console.error('出错了', error);
 });
 ```
-### 如何实现一个简单的Promise
+### 如何实现一个Promise
+1. function
 ```js
 //注意输入是什么，输出是什么
 function Promise(fn) {
@@ -355,10 +356,108 @@ var p = new Promies((resolve,reject)=>{
   setTimeout(()=>{ 
     resolve('success') // 异步操作，执行结束就会调用相应函数
   },1000)
-}).then((res)=>{ // 马上就调用then，将要做的事情传给了Promise,Promise将其添加至successArray
+}).then((res)=>{ // 马上就调用then，将要做的事情传给了Promise, Promise将其添加至successArray
   console.log(res)
 })
 ```
+2. class
+```js
+class MyPromise{
+  constructor (executor) {
+    this.state = 'pending'
+    this.value = null
+    this.reason = null
+    this.onFulFilledCallback = null // 存储成功回调函数
+    this.onRejectedCallback = null
+    // executor 是一个执行器，进入会立即执行
+    // 并传入resolve和reject方法
+    executor(this.resolve, this.reject)
+  }
+
+  resolve = (value)=>{
+    if(this.state === 'pending') {
+      this.state = 'fulfilled'
+      this.value = value
+
+      // 2. executor函数内为异步操作时，调用then方法时，先将callback存储起来，等异步执行成功后，再调用resolve函数
+      // this.onFulfilledCallback && this.onFulfilledCallback(value);
+
+      while (this.onFulfilledCallbacks.length) {
+      // Array.shift() 取出数组第一个元素，然后（）调用，shift不是纯函数，取出后，数组将失去该元素，直到数组为空
+        this.onFulfilledCallbacks.shift()(value)
+      }
+    }
+  }
+  reject = (reason)=>{
+    if(this.state === 'pending') {
+      this.state = 'rejected'
+      this.reason = reason
+
+      // this.onFulfilledCallback && this.onFulfilledCallback(value);
+      while (this.onRejectedCallbacks.length) {
+        this.onRejectedCallbacks.shift()(reason)
+      }
+    }
+  }
+
+  then(onFulfilled, onRejected){
+    if (this.state === 'fulfilled') {
+      onFulfilled(this.value)
+    } else if (this.state === 'rejected') {
+      onRejected(this.reason)
+    } else {
+      // 2. executor函数内为异步操作时，调用then方法时，state值尚未改变
+      // this.onFulFilledCallback = onFulfilled 
+      // this.onRejectedCallback = onRejected
+
+      this.onFulfilledCallbacks.push(onFulfilled);
+      this.onRejectedCallbacks.push(onRejected);
+    }
+  }
+}
+
+// then方法多次调用
+promise.then(value => {
+  console.log(1)
+  console.log('resolve', value)
+})
+
+promise.then(value => {
+  console.log(2)
+  console.log('resolve', value)
+})
+```
+3. class 增加then链式调用
+```js
+class MyPromise {
+  ......
+  then(onFulfilled, onRejected) {
+    const promise2 = new MyPromise((resolve, reject)=>{
+      if (this.state === 'fulfilled') {
+      const x = onFulfilled(this.value)
+      resolvePromise(x, resolve, reject)
+    } else if (this.state === 'rejected') {
+      onRejected(this.reason)
+    } else {
+      this.onFulfilledCallbacks.push(onFulfilled);
+      this.onRejectedCallbacks.push(onRejected);
+    }
+    })
+    return promise2
+  }
+}
+
+function resolvePromise(x, resolve, reject) {
+  if (x instanceof MyPromise) {
+    // x.then(value => resolve(value), reason => reject(reason))
+    x.then(resolve, reject)
+  } else {
+    resolve(x)
+  }
+}
+```
+
 ## References
 1.[Understanding Promises in JavaScript](https://blog.bitsrc.io/understanding-promises-in-javascript-c5248de9ff8f)
 2.[阮一峰 Promise](https://es6.ruanyifeng.com/#docs/promise)
+3.[从一道让我失眠的 Promise 面试题开始，深入分析 Promise 实现细节](https://juejin.cn/post/6945319439772434469?searchId=202309122146205CB463CA392C89EE350C#heading-11)
