@@ -456,6 +456,74 @@ function resolvePromise(x, resolve, reject) {
   }
 }
 ```
+4. 增加判断，返回自己的情况
+```js
+const promise = new Promise((resolve, reject) => {
+  resolve(100)
+})
+const p1 = promise.then(value => {
+  console.log(value)
+  return p1
+})
+
+// 100
+// Uncaught (in promise) TypeError: Chaining cycle detected for promise #<Promise>
+```
+```js
+class MyPromise {
+  ......
+  then(onFulfilled, onRejected) {
+    const promise2 = new MyPromise((resolve, reject) => {
+      if (this.status === FULFILLED) {
+        const x = onFulfilled(this.value);
+        // resolvePromise 集中处理，将 promise2 传入
+        resolvePromise(promise2, x, resolve, reject);
+      } 
+      ......
+    }) 
+    
+    return promise2;
+  }
+}
+
+function resolvePromise(promise2, x, resolve, reject) {
+  // 如果相等了，说明return的是自己，抛出类型错误并返回
+  if (promise2 === x) {
+    return reject(new TypeError('Chaining cycle detected for promise #<Promise>'))
+  }
+
+  if (x instanceof MyPromise) {
+    // x.then(value => resolve(value), reason => reject(reason))
+    x.then(resolve, reject)
+  } else {
+    resolve(x)
+  }
+}
+// 报错 ReferenceError: Cannot access 'promise2' before initialization
+// 
+```
+```js
+class MyPromise {
+  ......
+  then(onFulfilled, onRejected) {
+    const promise2 = new MyPromise((resolve, reject) => {
+      if (this.status === FULFILLED) {
+        // ==== 新增 ====
+        // 创建一个微任务等待 promise2 完成初始化
+        queueMicrotask(() => {
+          // 获取成功回调函数的执行结果
+          const x = onFulfilled(this.value);
+          // 传入 resolvePromise 集中处理
+          resolvePromise(promise2, x, resolve, reject);
+        })  
+      } 
+      ......
+    }) 
+    
+    return promise2;
+  }
+}
+```
 
 ## References
 1.[Understanding Promises in JavaScript](https://blog.bitsrc.io/understanding-promises-in-javascript-c5248de9ff8f)
