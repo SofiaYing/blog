@@ -362,13 +362,19 @@ var p = new Promies((resolve,reject)=>{
 ```
 2. class
 ```js
+const PENDING = 'pending'
+const FULFILLED = 'fulfilled'
+const REJECTED = 'rejected'
 class MyPromise{
-  constructor (executor) {
-    this.state = 'pending'
+  constructor (executor) { //executor为用户传入的函数
+    this.state = PENDING
     this.value = null
     this.reason = null
-    this.onFulFilledCallback = null // 存储成功回调函数
-    this.onRejectedCallback = null
+    // this.onFulFilledCallback = null // 存储成功回调函数
+    // this.onRejectedCallback = null
+    this.onFulFilledCallback = [] // 存储成功回调函数
+    this.onRejectedCallback = []
+
     // executor 是一个执行器，进入会立即执行
     // 并传入resolve和reject方法
     executor(this.resolve, this.reject)
@@ -376,10 +382,16 @@ class MyPromise{
 
   resolve = (value)=>{
     if(this.state === 'pending') {
-      this.state = 'fulfilled'
+      this.state = FULFILLED
       this.value = value
 
-      // 2. executor函数内为异步操作时，调用then方法时，先将callback存储起来，等异步执行成功后，再调用resolve函数
+      // 2. executor函数内为异步操作时，state不会马上改变。调用then方法时，先将callback存储起来，等异步执行成功后，再调用resolve函数
+      // const promise = new MyPromise((resolve, reject) => {
+      //   setTimeout(() => {
+      //     resolve('success')
+      //   },); 
+      // })
+
       // this.onFulfilledCallback && this.onFulfilledCallback(value);
 
       while (this.onFulfilledCallbacks.length) {
@@ -390,7 +402,7 @@ class MyPromise{
   }
   reject = (reason)=>{
     if(this.state === 'pending') {
-      this.state = 'rejected'
+      this.state = REJECTED
       this.reason = reason
 
       // this.onFulfilledCallback && this.onFulfilledCallback(value);
@@ -410,6 +422,7 @@ class MyPromise{
       // this.onFulFilledCallback = onFulfilled 
       // this.onRejectedCallback = onRejected
 
+      // 3. then 方法多次调用
       this.onFulfilledCallbacks.push(onFulfilled);
       this.onRejectedCallbacks.push(onRejected);
     }
@@ -434,28 +447,76 @@ class MyPromise {
   then(onFulfilled, onRejected) {
     const promise2 = new MyPromise((resolve, reject)=>{
       if (this.state === 'fulfilled') {
+      // 获取上一个 then 方法的 fulfilled 回调函数的返回值
       const x = onFulfilled(this.value)
+      // 根据返回值，改变 promise2 的状态，并建立与下一个 then 方法的关系
       resolvePromise(x, resolve, reject)
     } else if (this.state === 'rejected') {
-      onRejected(this.reason)
+      const x = onRejected(this.reason);
+      resolvePromise(x, resolve, reject)
     } else {
       this.onFulfilledCallbacks.push(onFulfilled);
       this.onRejectedCallbacks.push(onRejected);
     }
     })
+  
     return promise2
   }
 }
 
 function resolvePromise(x, resolve, reject) {
-  if (x instanceof MyPromise) {
-    // x.then(value => resolve(value), reason => reject(reason))
-    x.then(resolve, reject)
-  } else {
-    resolve(x)
-  }
+  // if (x instanceof MyPromise) {
+  //   // x.then(value => resolve(value), reason => reject(reason))
+  //   x.then(resolve, reject)
+  // } else {
+  //   resolve(x)
+  // }
+  if (typeof x === "object" || typeof x === "function") {
+        if (x === null) {
+            // 如果返回值是 null，
+            // 直接调用 resolve 函数，promise2 的状态变为 fulfilled，
+            // 返回值由下一个 then 方法的第一个回调函数接收。
+            return resolve(x);
+        }
+        try {
+            if (typeof x.then === "function") {
+                // 如果返回值是 Promise 对象或者 thenable 对象
+                // 那就只能交给它们的 then 方法来改变 promise2 的状态，以及获取相对应的状态值
+                // 以下代码等同于 value.then((value) => resolve(value), (err) => reject(err))
+                x.then(resolve, reject);
+            } else {
+                // 如果 then 不是函数，同 null 情况一样的处理逻辑。
+                resolve(x);
+            }
+        } catch (error) {
+            // 出现异常的情况下，调用 reject 函数
+            // promise2 的状态变为 rejected，
+            // 错误信息由下一个 then 方法的第二回调函数接收
+            reject(error);
+        }
+    } else {
+        // 如果返回值是其他对象或者原始数据类型值，同 null 情况一样的处理逻辑。
+        resolve(x);
+    }
 }
 ```
+::: tips 关于需要return promise2的问题，这里不能使用return this
+promise 的链式调用跟 jQuery 的链式调用是有区别的，jQuery 链式调用返回的对象还是最初那个 jQuery 对象；Promise 更类似于数组中一些方法，如 slice，每次进行操作之后，都会返回一个新的值。
+:::
+```js
+// 新创建一个 promise
+const aPromise = new Promise(function (resolve) {
+  resolve(100);
+});
+
+// then 返回的 promise
+var thenPromise = aPromise.then(function (value) {
+  console.log(value);
+});
+
+console.log(aPromise !== thenPromise); // => true
+```
+
 4. 增加判断，返回自己的情况
 ```js
 const promise = new Promise((resolve, reject) => {
@@ -516,13 +577,27 @@ class MyPromise {
           // 传入 resolvePromise 集中处理
           resolvePromise(promise2, x, resolve, reject);
         })  
-      } 
+      } else if (this.status === REJECTED) {
+        // 同理
+      }
       ......
     }) 
     
     return promise2;
   }
 }
+```
+thenable 对象的 then 方法 的回调函数可能是同步的也可能是异步的
+```js
+......
+if (typeof value.then === "function") {
+  // 异步执行
+  queueMicrotask(() => {
+      value.then(resolve, reject);
+  });
+}
+......
+
 ```
 
 ## References
