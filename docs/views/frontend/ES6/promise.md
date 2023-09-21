@@ -447,17 +447,17 @@ class MyPromise {
   then(onFulfilled, onRejected) {
     const promise2 = new MyPromise((resolve, reject)=>{
       if (this.state === 'fulfilled') {
-      // 获取上一个 then 方法的 fulfilled 回调函数的返回值
-      const x = onFulfilled(this.value)
-      // 根据返回值，改变 promise2 的状态，并建立与下一个 then 方法的关系
-      resolvePromise(x, resolve, reject)
-    } else if (this.state === 'rejected') {
-      const x = onRejected(this.reason);
-      resolvePromise(x, resolve, reject)
-    } else {
-      this.onFulfilledCallbacks.push(onFulfilled);
-      this.onRejectedCallbacks.push(onRejected);
-    }
+        // 获取上一个 then 方法的 fulfilled 回调函数的返回值
+        const x = onFulfilled(this.value)
+        // 根据返回值，改变 promise2 的状态，并建立与下一个 then 方法的关系
+        resolvePromise(x, resolve, reject)
+      } else if (this.state === 'rejected') {
+        const x = onRejected(this.reason);
+        resolvePromise(x, resolve, reject)
+      } else {
+        this.onFulfilledCallbacks.push(onFulfilled);
+        this.onRejectedCallbacks.push(onRejected);
+      }
     })
   
     return promise2
@@ -476,13 +476,13 @@ function resolvePromise(x, resolve, reject) {
             // 如果返回值是 null，
             // 直接调用 resolve 函数，promise2 的状态变为 fulfilled，
             // 返回值由下一个 then 方法的第一个回调函数接收。
-            return resolve(x);
+            return resolve(x); // 把当前value传给新生成的promise
         }
         try {
             if (typeof x.then === "function") {
                 // 如果返回值是 Promise 对象或者 thenable 对象
                 // 那就只能交给它们的 then 方法来改变 promise2 的状态，以及获取相对应的状态值
-                // 以下代码等同于 value.then((value) => resolve(value), (err) => reject(err))
+                // 以下代码等同于 x.then((value) => resolve(value), (err) => reject(err))
                 x.then(resolve, reject);
             } else {
                 // 如果 then 不是函数，同 null 情况一样的处理逻辑。
@@ -601,6 +601,12 @@ if (typeof value.then === "function") {
 ```
 
 ## References
-1.[Understanding Promises in JavaScript](https://blog.bitsrc.io/understanding-promises-in-javascript-c5248de9ff8f)
-2.[阮一峰 Promise](https://es6.ruanyifeng.com/#docs/promise)
-3.[从一道让我失眠的 Promise 面试题开始，深入分析 Promise 实现细节](https://juejin.cn/post/6945319439772434469?searchId=202309122146205CB463CA392C89EE350C#heading-11)
+1. [Understanding Promises in JavaScript](https://blog.bitsrc.io/understanding-promises-in-javascript-c5248de9ff8f)
+2. [阮一峰 Promise](https://es6.ruanyifeng.com/#docs/promise)
+3. [从一道让我失眠的 Promise 面试题开始，深入分析 Promise 实现细节](https://juejin.cn/post/6945319439772434469?searchId=202309122146205CB463CA392C89EE350C#heading-11)
+4. [我终于真正理解 Promise 了！](https://juejin.cn/post/7261252130442805285#heading-9)
+
+
+疑问：
+1. class内的函数声明
+2. x.then
