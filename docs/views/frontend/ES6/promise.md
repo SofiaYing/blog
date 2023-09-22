@@ -600,6 +600,48 @@ if (typeof value.then === "function") {
 
 ```
 
+### async/await
+1. 错误捕获
+await命令后面的Promise对象，运行结果可能是rejected，所以最好把await命令放在try...catch代码块中。
+```js
+async function main() {
+  try {
+    const val1 = await firstStep();
+    const val2 = await secondStep(val1);
+    const val3 = await thirdStep(val1, val2);
+
+    console.log('Final: ', val3);
+  }
+  catch (err) {
+    console.error(err);
+  }
+}
+
+async function myFunction() {
+  await somethingThatReturnsAPromise()
+  .catch(function (err) {
+    console.log(err);
+  });
+}
+```
+2. 多个await命令后面的异步操作，如果不存在继发关系，最好让它们同时触发。
+```js
+// getFoo和getBar是两个独立的异步操作（即互不依赖），被写成继发关系。这样比较耗时，因为只有getFoo完成以后，才会执行getBar，完全可以让它们同时触发。
+let foo = await getFoo();
+let bar = await getBar();
+
+// 解决办法
+// 写法一
+let [foo, bar] = await Promise.all([getFoo(), getBar()]);
+
+// 写法二
+let fooPromise = getFoo();
+let barPromise = getBar();
+let foo = await fooPromise;
+let bar = await barPromise;
+```
+3. await命令只能用在async函数之中，如果用在普通函数，就会报错。
+
 ## References
 1. [Understanding Promises in JavaScript](https://blog.bitsrc.io/understanding-promises-in-javascript-c5248de9ff8f)
 2. [阮一峰 Promise](https://es6.ruanyifeng.com/#docs/promise)
@@ -610,3 +652,4 @@ if (typeof value.then === "function") {
 疑问：
 1. class内的函数声明
 2. x.then
+3. 链式场景应用

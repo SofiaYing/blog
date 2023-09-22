@@ -224,10 +224,16 @@ setImmediate(() => {
 async function async1() {
   // 使用await关键字与Promise.then效果类似  await Promise.resolve()
   // 同步1
-  await async2()
-  // 相当于Promise.then()里的回调 
-  // 微任务1
-  console.log('async1 end')
+  try{
+    await async2() //await后面一般接返回promise的函数，如果不是 会立即执行
+
+    // 相当于Promise.then()里的回调 
+    // 微任务1
+    console.log('async1 end')
+  }catch{
+    console.log()
+  }
+
 }
 async function async2() {
   console.log('async2 end') // 同步2
