@@ -1,3 +1,14 @@
+In other object-oriented programming languages, the this keyword always refers to the current instance of the class. Whereas in JavaScript, the value of this depends on how a function is called.
+---
+title: this
+date: 2023-9-26
+categories:
+  - frond-end
+tags :
+  - this
+  - base
+---
+In other object-oriented programming languages, the this keyword always refers to the current instance of the class. Whereas in JavaScript, the value of this depends on how a function is called.
 ### this
 在函数执行时，this 总是指向调用该函数的对象。要判断 this 的指向，其实就是判断 this 所在的函数属于谁。
 
