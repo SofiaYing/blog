@@ -97,3 +97,149 @@ var student = {
 student.doSth() // 'Jack' student.doSth.call(student)
 student.otherStudent.doSth() // 'Bob' student.otherStudent.doSth.call(student.otherStudent)
 ```
+
+
+
+读取js代码时，第一次不执行，做词法分析，生成抽象语法树
+
+词法作用域确定的是语义，变量关系，无法确定值。
+
+var a = 1
+function b(){
+	console.log(a) //a是第一行的a
+}
+a=2
+b()
+
+
+
+
+函数是对象
+
+sayName如何获取到name
+
+var obj = {
+	name: ‘Zhang’,
+	sayName: function() { // sayName只是存了这个函数的地址。（对象在内存里是没有名字的！）
+		console.log(this.name) // this连接对象和函数
+	}
+}
+
+obj.sayName(obj.name) // Js的函数很纯粹，只接受参数，只输出一个返回值。是无法获取到点前面的obj的。
+
+obj.sayName() // 隐式指定obj为this
+obj.sayName.call(obj) // 显式指定obj为this，this就相当于是一个参数。
+
+
+
+
+var food = {
+	name: ‘fruit’,
+	detail: {
+		name: ‘apple’,
+		sayName: function() {
+			console.log(this.name)
+		}
+	}	
+} 
+
+food.detail.sayName() // apple
+food.detail.sayName.call() / food.detail.sayName.call(undefined) // 非严格模式window, 严格模式下报错 read property ‘name’ of undefined
+food.detail.sayName.call({name:’orange’}) //orange food.detail.sayName只是函数的地址，函数本身是独立于对象food存在的，不是对象的附属品（函数是一等公民），也就是说这个函数可以接受任何对象作为参数
+
+
+function接受的参数this(第一个参数), arguments(其他参数) 
+思考：this是参数，那么参数的值是什么时候确定的？
+参数的值只有在传参的时候才确定
+this是函数的第一个参数
+所以this的值是在传参的时候，即函数调用的时候，才能确定。
+
+
+function a() {
+	console.log(this)
+}
+this的值是多少？ 答：不能确定
+a() 
+2. this的值是什么？ 答：window（浏览器中） ，global（node.js中）
+function a(){
+	‘use strict’
+	console.log(this)
+}
+3. this的值是什么？ 答：undefined
+var obj = {
+	sayThis: a
+}
+obj.sayThis()
+4. this的值？ 答：对象obj
+obj.sayThis.call()
+5. this的值？答：undefined
+obj.sayThis.call(2) 
+6. this的值？答：2
+
+this的值如何确定？看文档。
+button.onclick = function() {
+	console.log(this)
+}
+this的值？答：button (文档已经规定：函数里的this是触发事件的元素)
+$(‘#button).on(‘click’, function(){
+	console.log(this)
+})
+2. this的值? 答：button (jQuery文档规定，this指向的是当前正在执行事件的元素)
+$(‘#ul’).on(‘click’,’li’,function(){
+	console.log(this)
+})
+3. this的值？答：对应的li（jQuery事件代理，this代表了与selector相匹配的元素）
+new Vue({
+	data: function() {
+		console.log(this)
+	}
+})
+4. this的值? 答：new出来的对象
+
+button.onclick = function() {
+	this.disabled = true
+	var btn = this
+	$.get(‘/xxx.json’,function() {
+		// this.disabled = false  // this是window
+		btn.disabled = false
+	})
+}
+
+因为this过于难用，提出了箭头函数，不再接受传参， 既没有this，也没有arguments
+var f = ()=>{console.log(this)}  // 沿用的是外面的this
+f.call(1) // window，不接受this的传值
+
+内存机制可知：没有所谓的值传递，都是复制。
+内存机制 https://juejin.cn/post/6844903615300108302? searchId=202309291636273017C406EC2F14788C74#heading-2
+内存泄漏 https://www.ruanyifeng.com/blog/2017/04/memory-leak.html
+js基本数据类型为什么可以调用方法 https://juejin.cn/post/6954336834210136094#heading-2
+
+
+
+
+New 
+
+思考：如何批量创建对象
+
+注意 this，相当于js帮忙创建的空对象，最后又帮忙返回了这个对象
+
+
+
+Js是动态语言，本身就是多态的
+类就是构造函数（JAVA中不是这样）
+
+JAVA中的类可以用一个关键字实现继承
+
+
+
+单项绑定与双向绑定
+没有组织的代码，意大利面条式代码
+ 
+Web三层架构 
+
+（设计模式：即套路）
+MVC（借鉴后端的分类思想）
+M model 专门负责数据 
+V  view  专门负责表现
+C  controller 负责其他逻辑
+
