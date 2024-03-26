@@ -27,6 +27,86 @@ declare module '*.vue' {
 }
 ```
 
+## 选项式 API(Options API) 与 组合式 API(Composition API)
+
+https://juejin.cn/post/6985493062432587813?searchId=2024032616434345ED9C15163DE0076C2B
+
+## 父子组件通信
+
+1. setup()
+
+```vue
+// 父组件
+<template>
+  <!-- $event 触发该事件时传递的参数 -->
+  <Switch :value="state" @input="state = $event"></Switch>
+</template>
+<script lang="ts">
+import { ref } from "vue";
+import Switch from "../lib/Switch.vue";
+export default {
+  setup() {
+    const state = ref(false);
+    return { state };
+  },
+  components: { Switch },
+};
+</script>
+//子组件
+<template>
+  <div role="switch" class="zyy-switch zyy-switch-wrapper" @click="toggle">
+    <div class="zyy-switch-content" :class="{ checked: value }"></div>
+  </div>
+</template>
+<script lang="ts">
+export default {
+  props: {
+    value: Boolean,
+  },
+  setup(props, context) {
+    const toggle = () => {
+      // this.$emit
+      console.log(!props.value);
+      context.emit("input", !props.value);
+    };
+
+    return { toggle }; //return {toggle: toggle} ES6 简化
+  },
+};
+</script>
+```
+
+2. setup 语法糖
+
+```vue
+// 父组件
+<template>
+  <!-- $event 触发该事件时传递的参数 -->
+  <Switch :value="state" @input="state = $event"></Switch>
+</template>
+<script setup lang="ts">
+import { ref } from "vue";
+import Switch from "../lib/Switch.vue";
+
+const state = ref(false);
+</script>
+//子组件
+<template>
+  <div role="switch" class="zyy-switch zyy-switch-wrapper" @click="toggle">
+    <div class="zyy-switch-content" :class="{ checked: value }"></div>
+  </div>
+</template>
+<script setup lang="ts">
+const props = defineProps({
+  value: Boolean,
+});
+const emit = defineEmits();
+const toggle = () => {
+  emit("input", !props.value);
+};
+</script>
+```
+
 ## What is Vue?
 
 Vue is a JavaScript **framework** for building **user interfaces**. It **builds on top of** standard HTML, CSS, and JavaScript and provides a declarative, component-based programming model that helps you efficiently develop user interface, **be they simple or complex**.

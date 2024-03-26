@@ -290,3 +290,4 @@ git config --global --unset http.proxy
    - generate new token
    - 复选框没有特别的要求可以都选上，最后点击 generate token
    - 记得将 token 保存下来
+6. git push --set-upstream origin master(这个命令是用于设置默认的上游分支，这样在后续的 git push 或 git pull 操作中就不需要每次都指定远程分支了。)
