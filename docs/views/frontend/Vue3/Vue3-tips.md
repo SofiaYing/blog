@@ -107,6 +107,165 @@ const toggle = () => {
 </script>
 ```
 
+### v-model
+
+因为父组件向子组件传递一个值，子组件触发父组件方法，通知其需要改变传入的值，这个过程太过于常见，Vue 提供了语法糖 v-model 来简化这一过程。
+
+v-model 双向绑定，其实就是自动监听。
+
+- 简化以下过程
+
+```vue
+// 父组件
+<template>
+  <Switch :value="state" @update:value="state = $event"></Switch>
+</template>
+<!-- ...  -->
+
+//子组件
+<!-- ... -->
+<script>
+const props = defineProps({
+  value: Boolean,
+});
+const toggle = () => {
+  emit("update:value", !props.value); //update: 后面接的必须是要监听的属性名
+};
+</script>
+```
+
+- 使用 v-model 后
+
+```vue
+// 父组件
+<template>
+  <Switch v-model:value="state"></Switch>
+</template>
+<!-- ...  -->
+//子组件
+<!-- ... -->
+<script>
+const props = defineProps({
+  value: Boolean,
+});
+const toggle = () => {
+  emit("update:value", !props.value); //update: 后面接的必须是要监听的属性名
+};
+</script>
+```
+
+::: details vue2 中的 v-model 和 .sync VS vue3 中的 v-model
+
+- .sync 是 Vue 中的一个语法糖，用于简化父组件与子组件之间双向绑定数据的操作。原理：当父组件使用 .sync 修饰子组件的 prop 时，Vue 会为子组件自动添加一个名为 `update:<propName>` 的事件监听器，并在子组件触发该事件时更新父组件中相应的属性。用法：
+
+```vue
+// 在父组件中：
+<template>
+  <child-component :foo.sync="bar" />
+</template>
+
+<script>
+import ChildComponent from "./ChildComponent.vue";
+
+export default {
+  components: {
+    ChildComponent,
+  },
+  data() {
+    return {
+      bar: "hello",
+    };
+  },
+};
+</script>
+```
+
+```vue
+// 在子组件中：
+<template>
+  <button @click="updateFoo">Click me</button>
+</template>
+
+<script>
+export default {
+  props: ["foo"],
+  methods: {
+    updateFoo() {
+      this.$emit("update:foo", "world");
+    },
+  },
+};
+</script>
+```
+
+这样，当在子组件中点击按钮时，会触发 updateFoo 方法，该方法通过 \$emit('update:foo', 'world') 发送一个事件，父组件监听到这个事件，并更新 bar 属性的值为 'world'。
+
+- 在 Vue 2 中，v-model 是一个指令，用于在表单元素和自定义组件中创建双向数据绑定。它的原理是通过监听输入事件和更新数据属性来实现数据的双向绑定。使用方法：
+
+```vue
+<!-- 在表单元素中使用： -->
+<input v-model="message" type="text">
+```
+
+这样做会将输入框的值与 Vue 实例中的 message 属性双向绑定起来。当输入框的值改变时，message 的值也会跟着改变，并且当 message 的值改变时，输入框的值也会自动更新。
+
+```vue
+<!-- 在自定义组件中使用： -->
+<custom-input v-model="message"></custom-input>
+```
+
+假设 custom-input 是一个自定义组件，通过在组件上使用 v-model，可以将组件内部的值与外部的数据进行双向绑定。在组件内部，通过接收 value 属性来获取外部的值，并通过触发 input 事件来更新外部的值。
+
+```vue
+// custom-input 组件内部
+<template>
+  <input :value="value" @input="$emit('input', $event.target.value)" />
+</template>
+
+<script>
+export default {
+  props: ["value"],
+};
+</script>
+```
+
+这样，当在父组件中使用 custom-input 组件时，就可以像使用原生的表单元素一样，实现双向数据绑定。
+
+- 在 Vue 3 中，v-model 仍然存在，但是它不再是一个指令，而是一个由开发者定义的指令或组件的 API。Vue 3 引入了 v-model 的模型选择器，允许开发者自定义组件上的 v-model 行为。使用方法：
+
+```vue
+<!-- 在内置组件中使用： -->
+<input v-model:modelValue="message" type="text">
+```
+
+在 Vue 3 中，使用 v-model 指令需要指定一个模型选择器，通常是 :modelValue。这样做会将输入框的值与 Vue 实例中的 message 属性双向绑定起来。
+
+```vue
+<!-- 在自定义组件中使用： -->
+<custom-input v-model:modelValue="message"></custom-input>
+```
+
+与内置组件类似，当在自定义组件上使用 v-model 时，需要指定一个模型选择器，通常是 :modelValue。在组件内部，通过接收 modelValue 属性来获取外部的值，并通过触发 update:modelValue 事件来更新外部的值。
+
+```vue
+// custom-input 组件内部
+<template>
+  <input
+    :value="modelValue"
+    @input="$emit('update:modelValue', $event.target.value)"
+  />
+</template>
+
+<script>
+export default {
+  props: ["modelValue"],
+};
+</script>
+```
+
+这样，当在父组件中使用 custom-input 组件时，就可以像使用原生的表单元素一样，实现双向数据绑定。
+:::
+
 ## What is Vue?
 
 Vue is a JavaScript **framework** for building **user interfaces**. It **builds on top of** standard HTML, CSS, and JavaScript and provides a declarative, component-based programming model that helps you efficiently develop user interface, **be they simple or complex**.
