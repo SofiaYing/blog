@@ -291,3 +291,17 @@ git config --global --unset http.proxy
    - 复选框没有特别的要求可以都选上，最后点击 generate token
    - 记得将 token 保存下来
 6. git push --set-upstream origin master(这个命令是用于设置默认的上游分支，这样在后续的 git push 或 git pull 操作中就不需要每次都指定远程分支了。)
+
+### 34. mac 切换 node 版本
+
+- curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+- nvm install 14.17.0 (安装指定版本)
+- nvm use 14.17.0
+  `问题：` zsh：command not found: nvm 实际已经安装了 nvm
+  这个问题通常是由于终端环境没有正确配置导致的。在使用 nvm 之前，你需要确保 nvm 的初始化脚本已经被添加到你的 shell 配置文件中（例如 ~/.bashrc、~/.bash_profile、~/.zshrc 等）。
+- 找到.zshrc 文件
+  1. Open Terminal （打开终端）
+  2. open ~
+  3. Press `Cmd + Shift + .` to show the hidden files in finder.
+  4. 如果没有.zshrc 文件，需要创建 touch ~/.zshrc
+  5. 在.zshrc 文件中添加 `export NVM_DIR="$HOME/.nvm" [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"`
